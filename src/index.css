@@ -1,3 +1,7 @@
+html, body, #root {
+  height: 100vh;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +14,24 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.ant-form-item-is-validating.ant-form-item-has-feedback .ant-form-item-children-icon{
+    right: 130px !important;
+}
+
+.ant-form-item-has-error.ant-form-item-has-feedback .ant-form-item-children-icon {
+  right: 130px !important;
+}
+
+.ant-form-item-has-success.ant-form-item-has-feedback .ant-form-item-children-icon {
+  right: 130px !important;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.tabs, .ant-tabs-content {
+  height: 100% !important;
 }
