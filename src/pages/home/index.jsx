@@ -1,8 +1,10 @@
+import { MenuOutlined } from '@ant-design/icons';
 import {
   Button,
-  Col, Layout, message, Result, Row, Skeleton, Typography
+  Col, Layout, message, Popover, Result, Row, Skeleton, Typography
 } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
+import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import ScoreboardIcon from 'assets/icons/scoreboard.png';
 import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -13,6 +15,7 @@ const { Title } = Typography;
 
 function HomePage() {
   const axios = useAxios();
+  const screens = useBreakpoint();
 
   const [academyInfo, setAcademyInfo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -37,10 +40,14 @@ function HomePage() {
     }
   }, [axios]);
 
+  function openAdministrativeArea() {
+
+  }
+
   function renderHeader() {
     return (
       <Header>
-        <Row align="middle" gutter={24}>
+        <Row justify="center" align="middle" gutter={24}>
           <Col>
             <Avatar src={ScoreboardIcon} shape="square" size={36} />
           </Col>
@@ -48,9 +55,21 @@ function HomePage() {
             <Title level={3} style={{ color: 'white', margin: 0 }}>{academyInfo.name}</Title>
           </Col>
           <Col>
-            <Button type="primary">
-              Área administrativa
-            </Button>
+            {screens.xs ? (
+              <Popover content={(
+                <Button type="primary" onClick={openAdministrativeArea}>
+                  Área administrativa
+                </Button>
+              )}
+              >
+                <Button type="primary" icon={<MenuOutlined />} />
+              </Popover>
+
+            ) : (
+              <Button type="primary" onClick={openAdministrativeArea}>
+                Área administrativa
+              </Button>
+            )}
           </Col>
         </Row>
       </Header>
@@ -90,7 +109,7 @@ function HomePage() {
 
   function renderRealTimeMatches() {
     return (
-      <Row>
+      <Row justify={screens.xs ? 'center' : 'start'} style={{ marginTop: screens.xs ? 24 : 0 }}>
         <Col>
           <Title level={4}>Placares em tempo real</Title>
         </Col>
@@ -100,11 +119,11 @@ function HomePage() {
 
   function renderContent() {
     return (
-      <Row style={{ padding: 48, height: '100%' }}>
-        <Col span={6}>
+      <Row style={{ padding: screens.xs ? 24 : 48, height: '100%' }}>
+        <Col md={6} xs={24}>
           {renderAdditionalInfo()}
         </Col>
-        <Col flex={16} offset={2}>
+        <Col md={{ span: 16, offset: 2 }} xs={{ span: 24, offset: 0 }}>
           {renderRealTimeMatches()}
         </Col>
       </Row>
