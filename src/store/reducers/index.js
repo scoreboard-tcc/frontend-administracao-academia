@@ -1,4 +1,4 @@
 import { combineReducers } from 'redux';
-import academyReducer from './academy';
+import authRouter from './auth';
 
-export default combineReducers({ academy: academyReducer });
+export default combineReducers({ auth: authRouter });

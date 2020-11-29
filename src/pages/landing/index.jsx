@@ -1,16 +1,14 @@
 import { MenuOutlined } from '@ant-design/icons';
 import {
   Button,
-  Col, Layout, message, Popover, Result, Row, Skeleton, Typography
+  Col, Layout, message, Popover, Result, Row, Skeleton, Typography,
 } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import ScoreboardIcon from 'assets/icons/scoreboard.png';
 import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setAcademy } from 'store/actions/academy';
 import getSubdomain from 'utils/subdomain';
 
 const { Header, Content } = Layout;
@@ -21,21 +19,17 @@ function LandingPage() {
   const screens = useBreakpoint();
   const history = useHistory();
 
-  const academy = useSelector((state) => state.academy);
-  const dispatch = useDispatch();
-
   const [loading, setLoading] = useState(false);
   const [academyNotFound, setAcademyNotFound] = useState(false);
+  const [academy, setAcademy] = useState({});
 
   const requestAcademyInfo = useCallback(async () => {
     setLoading(true);
 
     try {
-      const subdomain = getSubdomain();
+      const { data } = await axios.get(`/public/getAcademyPublicDataBySubdomain/${getSubdomain()}`);
 
-      const { data } = await axios.get(`/public/getAcademyPublicDataBySubdomain/${subdomain}`);
-
-      dispatch(setAcademy({ ...data, subdomain }));
+      setAcademy(data);
       setAcademyNotFound(false);
     } catch (error) {
       message.error('Ocorreu um erro ao carregar os dados da academia.');
@@ -46,7 +40,7 @@ function LandingPage() {
     } finally {
       setLoading(false);
     }
-  }, [axios, dispatch]);
+  }, [axios]);
 
   function openAdministrativeArea() {
     history.push('/auth');
@@ -144,11 +138,11 @@ function LandingPage() {
 
   return (
     <Layout style={{ height: '100%' }}>
-      {academy && renderHeader()}
+      {academy.id && renderHeader()}
       <Content style={{ backgroundColor: '#F1F2F5' }}>
         {academyNotFound && renderAcademyNotFound()}
         {loading && <Skeleton />}
-        {academy && renderContent()}
+        {academy.id && renderContent()}
       </Content>
     </Layout>
   );
