@@ -24,7 +24,7 @@ function AuthPage() {
     setLoading(true);
 
     try {
-      const { data } = await axios.get(`/public/getAcademyPublicDataBySubdomain/${getSubdomain()}`);
+      const { data } = await axios.get(`/public/getAcademyBySubdomain/${getSubdomain()}`);
 
       setAcademy(data);
       setAcademyNotFound(false);
@@ -41,7 +41,7 @@ function AuthPage() {
 
   async function onFinish({ email, password }) {
     try {
-      const { data } = await axios.post('/authentication', { email, password, academySubdomain: getSubdomain() });
+      const { data } = await axios.post('/authentication/coordinator', { email, password, academySubdomain: getSubdomain() });
 
       localStorage.setItem('Authorization', data.token);
       history.replace('/home');

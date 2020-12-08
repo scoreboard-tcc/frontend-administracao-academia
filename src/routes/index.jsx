@@ -14,7 +14,7 @@ function Router() {
         <Route path="/auth">
           <AuthPage />
         </Route>
-        <Route exact path="/home">
+        <Route path="/home">
           <HomePage />
         </Route>
       </Switch>

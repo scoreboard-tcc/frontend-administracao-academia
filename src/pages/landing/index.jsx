@@ -27,7 +27,7 @@ function LandingPage() {
     setLoading(true);
 
     try {
-      const { data } = await axios.get(`/public/getAcademyPublicDataBySubdomain/${getSubdomain()}`);
+      const { data } = await axios.get(`/public/getAcademyBySubdomain/${getSubdomain()}`);
 
       setAcademy(data);
       setAcademyNotFound(false);

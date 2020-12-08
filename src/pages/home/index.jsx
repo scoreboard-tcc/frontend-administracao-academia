@@ -1,5 +1,5 @@
 import {
-  AppstoreOutlined, DashboardOutlined, InsertRowBelowOutlined, MenuOutlined, TeamOutlined, UsergroupAddOutlined,
+  DashboardOutlined, InsertRowBelowOutlined, MenuOutlined, TeamOutlined, UsergroupAddOutlined,
 } from '@ant-design/icons';
 import {
   Avatar, Button, Col, Dropdown, Layout, Menu, Row, Skeleton, Typography,
@@ -13,6 +13,7 @@ import {
 import { setAuth } from 'store/actions/auth';
 import getAuthenticationToken from 'utils/token';
 import DashboardPage from '../dashboard';
+import CoordinatorsPage from './coordinators';
 
 const { Content, Sider } = Layout;
 const { Text } = Typography;
@@ -78,7 +79,7 @@ function HomePage() {
             </Link>
           </Menu.Item>
           <Menu.Item key="coordinators" icon={<UsergroupAddOutlined />}>
-            <Link to="/">
+            <Link to={`${url}/coordinators`}>
               Coordenadores
             </Link>
           </Menu.Item>
@@ -88,10 +89,14 @@ function HomePage() {
   }
 
   function setupRoutes() {
+    console.log(`${path}/coordinators`);
     return (
       <Switch>
         <Route exact path={`${path}`}>
           <DashboardPage />
+        </Route>
+        <Route exact path={`${path}/coordinators`}>
+          <CoordinatorsPage />
         </Route>
       </Switch>
     );
@@ -100,7 +105,6 @@ function HomePage() {
   function renderContent() {
     return (
       <>
-        {' '}
         <Sider
           breakpoint="lg"
           collapsedWidth="0"
@@ -131,7 +135,6 @@ function HomePage() {
   return (
     <Layout style={{ height: '100vh' }}>
       {academy ? renderContent() : <Skeleton />}
-
     </Layout>
   );
 }
