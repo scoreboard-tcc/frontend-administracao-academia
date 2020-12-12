@@ -14,6 +14,7 @@ import { setAuth } from 'store/actions/auth';
 import getAuthenticationToken from 'utils/token';
 import DashboardPage from '../dashboard';
 import CoordinatorsPage from './coordinators';
+import PlayersPage from './players';
 
 const { Content, Sider } = Layout;
 const { Text } = Typography;
@@ -74,7 +75,7 @@ function HomePage() {
             </Link>
           </Menu.Item>
           <Menu.Item key="players" icon={<TeamOutlined />}>
-            <Link to="/">
+            <Link to={`${url}/players`}>
               Jogadores
             </Link>
           </Menu.Item>
@@ -89,7 +90,6 @@ function HomePage() {
   }
 
   function setupRoutes() {
-    console.log(`${path}/coordinators`);
     return (
       <Switch>
         <Route exact path={`${path}`}>
@@ -97,6 +97,9 @@ function HomePage() {
         </Route>
         <Route exact path={`${path}/coordinators`}>
           <CoordinatorsPage />
+        </Route>
+        <Route exact path={`${path}/players`}>
+          <PlayersPage />
         </Route>
       </Switch>
     );
