@@ -4,7 +4,6 @@ import {
 import {
   Avatar, Button, Col, Dropdown, Layout, Menu, Row, Skeleton, Typography,
 } from 'antd';
-import ScoreboardIcon from 'assets/icons/scoreboard.png';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -40,13 +39,14 @@ function HomePage() {
   );
 
   function renderMenu() {
+    console.log(academy);
     return (
       <>
         <Row>
           <Col style={{ padding: 12, flex: 1 }}>
             <Row align="middle">
               <Col span={6}>
-                <Avatar src={ScoreboardIcon} shape="square" size={36} />
+                <Avatar src={academy.logoUrl} shape="square" size={36} />
               </Col>
               <Col span={14}>
                 <Text style={{ fontWeight: 500, color: 'white' }}>{academy.name}</Text>

@@ -1,10 +1,8 @@
-import { TeamOutlined } from '@ant-design/icons';
 import {
   Avatar, Button, Col, Form, Input, Layout, message, Result, Row, Skeleton, Typography,
 } from 'antd';
 import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import getSubdomain from 'utils/subdomain';
 import getAuthenticationToken from 'utils/token';
@@ -68,8 +66,7 @@ function AuthPage() {
         style={{ height: '100%' }}
       >
         <Col sm={4} xs={16} style={{ textAlign: 'center' }}>
-          {/* TODO: adicionar logo da academia */}
-          <Avatar size={100} icon={<TeamOutlined />} style={{ marginBottom: 16 }} />
+          <Avatar size={100} src={academy.logoUrl} style={{ marginBottom: 16 }} />
           <Title level={3} type="secondary" style={{ marginBottom: 32 }}>{academy.name}</Title>
           <Form size="large" onFinish={onFinish}>
             <Form.Item

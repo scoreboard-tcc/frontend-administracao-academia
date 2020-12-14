@@ -5,7 +5,6 @@ import {
 } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
-import ScoreboardIcon from 'assets/icons/scoreboard.png';
 import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -51,7 +50,7 @@ function LandingPage() {
       <Header>
         <Row justify="center" align="middle" gutter={24}>
           <Col>
-            <Avatar src={ScoreboardIcon} shape="square" size={36} />
+            <Avatar src={academy.logoUrl} shape="square" size={36} />
           </Col>
           <Col flex={1}>
             <Title level={3} style={{ color: 'white', margin: 0 }}>{academy.name}</Title>
