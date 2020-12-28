@@ -33,7 +33,7 @@ function MatchCard({ match }) {
         <Col flex={1}>
           <Tag>
             <Text strong style={{ fontSize: 14 }}>
-              Virtual
+              {match.scoreboard ? match.scoreboard.description : 'Virtual'}
             </Text>
           </Tag>
         </Col>
@@ -72,7 +72,7 @@ function MatchCard({ match }) {
           </Tag>
         </Col>
 
-        { !match.listed && (
+        { match.listed && !match.listed && (
         <Col>
           <EyeInvisibleOutlined title="Partida não listada" />
         </Col>

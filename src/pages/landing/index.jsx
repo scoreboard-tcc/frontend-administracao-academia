@@ -1,11 +1,13 @@
 import { MenuOutlined } from '@ant-design/icons';
 import {
+  Avatar,
   Button,
+  List,
   Col, Layout, message, Popover, Result, Row, Skeleton, Typography,
 } from 'antd';
-import Avatar from 'antd/lib/avatar/avatar';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import useAxios from 'hooks/use-axios';
+import MatchCard from 'pages/home/matches/MatchCard';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import getSubdomain from 'utils/subdomain';
@@ -21,6 +23,7 @@ function LandingPage() {
   const [loading, setLoading] = useState(false);
   const [academyNotFound, setAcademyNotFound] = useState(false);
   const [academy, setAcademy] = useState({});
+  const [matches, setMatches] = useState([]);
 
   const requestAcademyInfo = useCallback(async () => {
     setLoading(true);
@@ -40,6 +43,24 @@ function LandingPage() {
       setLoading(false);
     }
   }, [axios]);
+
+  const requestMatches = useCallback(async () => {
+    if (!academy.id) {
+      return null;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data } = await axios.get(`/public/getMatchesByAcademyId/${academy.id}`);
+
+      setMatches(data);
+    } catch (error) {
+      message.error('Ocorreu um erro ao carregar as partidas.');
+    } finally {
+      setLoading(false);
+    }
+  }, [axios, academy.id]);
 
   function openAdministrativeArea() {
     history.push('/auth');
@@ -108,23 +129,47 @@ function LandingPage() {
     );
   }
 
+  function renderMatch(match) {
+    return (
+      <List.Item>
+        <MatchCard match={match} />
+      </List.Item>
+    );
+  }
+
   function renderRealTimeMatches() {
     return (
-      <Row justify={screens.xs ? 'center' : 'start'} style={{ marginTop: screens.xs ? 24 : 0 }}>
-        <Col>
-          <Title level={4}>Placares em tempo real</Title>
-        </Col>
-      </Row>
+      <>
+        <Row justify={screens.xs ? 'center' : 'start'} style={{ marginTop: screens.xs ? 24 : 0 }}>
+          <Col>
+            <Title level={4}>Partidas em tempo real</Title>
+          </Col>
+        </Row>
+        <Row>
+          <Col flex={1}>
+            <List
+              grid={{
+                gutter: 12, xs: 1, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3,
+              }}
+              dataSource={matches}
+              renderItem={renderMatch}
+              locale={{ emptyText: 'Nenhuma partida em andamento.' }}
+            />
+          </Col>
+        </Row>
+      </>
     );
   }
 
   function renderContent() {
     return (
       <Row style={{ padding: screens.xs ? 24 : 48, height: '100%' }}>
-        <Col md={6} xs={24}>
+        {academy.additionalInfo && (
+        <Col md={5} xs={24}>
           {renderAdditionalInfo()}
         </Col>
-        <Col md={{ span: 16, offset: 2 }} xs={{ span: 24, offset: 0 }}>
+        )}
+        <Col md={{ span: 17, offset: 1 }} xs={{ span: 24, offset: 0 }}>
           {renderRealTimeMatches()}
         </Col>
       </Row>
@@ -132,13 +177,14 @@ function LandingPage() {
   }
 
   useEffect(() => {
-    requestAcademyInfo();
-  }, [requestAcademyInfo]);
+    requestAcademyInfo()
+      .then(requestMatches);
+  }, [requestAcademyInfo, requestMatches]);
 
   return (
     <Layout style={{ height: '100%' }}>
       {academy.id && renderHeader()}
-      <Content style={{ backgroundColor: '#F1F2F5' }}>
+      <Content style={{ backgroundColor: '#F1F2F5', minHeight: 'unset' }}>
         {academyNotFound && renderAcademyNotFound()}
         {loading && <Skeleton />}
         {academy.id && renderContent()}
