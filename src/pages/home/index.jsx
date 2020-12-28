@@ -11,8 +11,8 @@ import {
 } from 'react-router-dom';
 import { setAuth } from 'store/actions/auth';
 import getAuthenticationToken from 'utils/token';
-import DashboardPage from '../dashboard';
 import CoordinatorsPage from './coordinators';
+import MatchesPage from './matches';
 import PlayersPage from './players';
 
 const { Content, Sider } = Layout;
@@ -39,7 +39,6 @@ function HomePage() {
   );
 
   function renderMenu() {
-    console.log(academy);
     return (
       <>
         <Row>
@@ -64,14 +63,9 @@ function HomePage() {
           </Col>
         </Row>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[location.pathname.split('/').slice(-1).pop()]}>
-          <Menu.Item key="home" icon={<DashboardOutlined />}>
-            <Link to={url}>
-              Dashboard
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="scoreboards" icon={<InsertRowBelowOutlined />}>
-            <Link to="/">
-              Placares
+          <Menu.Item key="matches" icon={<InsertRowBelowOutlined />}>
+            <Link to={`${url}/matches`}>
+              Partidas
             </Link>
           </Menu.Item>
           <Menu.Item key="players" icon={<TeamOutlined />}>
@@ -92,8 +86,8 @@ function HomePage() {
   function setupRoutes() {
     return (
       <Switch>
-        <Route exact path={`${path}`}>
-          <DashboardPage />
+        <Route exact path={`${path}/matches`}>
+          <MatchesPage />
         </Route>
         <Route exact path={`${path}/coordinators`}>
           <CoordinatorsPage />
@@ -116,7 +110,10 @@ function HomePage() {
           {renderMenu()}
         </Sider>
         <Layout>
-          <Content style={{ margin: 16, padding: 16, backgroundColor: 'white' }}>
+          <Content style={{
+            margin: 16, padding: 16, backgroundColor: 'white', minHeight: 'unset',
+          }}
+          >
             {setupRoutes()}
           </Content>
         </Layout>

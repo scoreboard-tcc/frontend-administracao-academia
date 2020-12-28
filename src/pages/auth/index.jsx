@@ -42,7 +42,7 @@ function AuthPage() {
       const { data } = await axios.post('/authentication/coordinator', { email, password, academySubdomain: getSubdomain() });
 
       localStorage.setItem('Authorization', data.token);
-      history.replace('/home');
+      history.replace('/home/matches');
     } catch (error) {
       message.error('Verifique se as credenciais estão corretas.');
     }
@@ -99,7 +99,7 @@ function AuthPage() {
 
   useEffect(() => {
     if (getAuthenticationToken()) {
-      history.replace('/home');
+      history.replace('/home/matches');
     } else {
       requestAcademyInfo();
     }
