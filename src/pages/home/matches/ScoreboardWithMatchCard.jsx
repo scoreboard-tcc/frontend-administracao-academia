@@ -2,14 +2,17 @@ import {
   ExclamationCircleOutlined, EyeInvisibleOutlined, LoadingOutlined, LockOutlined,
 } from '@ant-design/icons';
 import {
-  Button,
   Card, Col, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import React from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const { Text } = Typography;
 
 function ScoreboardWithMatchCard({ scoreboard }) {
+  const { url } = useRouteMatch();
+  const history = useHistory();
+
   function renderMatchStatus() {
     return (
       <Text type="secondary" style={{ fontSize: 14 }}>
@@ -52,8 +55,8 @@ function ScoreboardWithMatchCard({ scoreboard }) {
     if (!scoreboard.match) {
       return (
         <Row justify="center" align="middle" style={{ height: 100 }}>
-          <Col>
-            <Button type="dashed">Clique para configurar uma partida</Button>
+          <Col style={{ paddingTop: 40 }}>
+            <Text strong type="secondary">Clique para configurar uma partida</Text>
           </Col>
         </Row>
       );
@@ -102,8 +105,20 @@ function ScoreboardWithMatchCard({ scoreboard }) {
     );
   }
 
+  function onCardClick() {
+    if (!scoreboard.match) {
+      history.push(`${url}/create?id=${scoreboard.id}&ds=${scoreboard.description}`);
+    }
+  }
+
   return (
-    <Card title={renderTitle()} bodyStyle={{ padding: 12 }}>
+    <Card
+      title={renderTitle()}
+      bodyStyle={{ padding: 12 }}
+      headStyle={{ padding: '0 12px' }}
+      onClick={onCardClick}
+      style={{ cursor: 'pointer' }}
+    >
       {renderContent()}
       {renderFooter()}
     </Card>

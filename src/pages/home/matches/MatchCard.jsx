@@ -89,7 +89,12 @@ function MatchCard({ match }) {
   }
 
   return (
-    <Card title={renderTitle()} bodyStyle={{ padding: 12 }}>
+    <Card
+      title={renderTitle()}
+      bodyStyle={{ padding: 12 }}
+      headStyle={{ padding: '0 12px' }}
+      style={{ cursor: 'pointer' }}
+    >
       {renderContent()}
       {renderFooter()}
     </Card>

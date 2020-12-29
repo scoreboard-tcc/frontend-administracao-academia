@@ -1,10 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
-  Col, Divider, Dropdown, Layout, List, Menu, message, Row, Skeleton, Typography,
+  Col, Divider, Layout, List, message, Row, Skeleton, Typography,
 } from 'antd';
 import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import MatchCard from './MatchCard';
 import ScoreboardWithMatchCard from './ScoreboardWithMatchCard';
 
@@ -13,6 +14,8 @@ const { Title } = Typography;
 
 function MatchesPage() {
   const axios = useAxios();
+  const { url } = useRouteMatch();
+  const history = useHistory();
 
   const [scoreboardsWithMatches, setScoreboardsWithMatches] = useState([]);
   const [virtualMatches, setvirtualMatches] = useState([]);
@@ -79,6 +82,10 @@ function MatchesPage() {
     );
   }
 
+  function openCreateMatchPage() {
+    history.push(`${url}/create`);
+  }
+
   function renderVirtualMatches() {
     return (
       <>
@@ -87,7 +94,11 @@ function MatchesPage() {
             <Divider orientation="left">Partidas virtuais</Divider>
           </Col>
           <Col>
-            <Button type="primary" icon={<PlusOutlined />}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={openCreateMatchPage}
+            >
               Criar partida virtual
             </Button>
           </Col>

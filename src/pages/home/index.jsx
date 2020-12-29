@@ -7,12 +7,13 @@ import {
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Link, Route, Switch, useHistory, useLocation, useRouteMatch,
+  Link, Redirect, Route, Switch, useHistory, useLocation, useRouteMatch,
 } from 'react-router-dom';
 import { setAuth } from 'store/actions/auth';
 import getAuthenticationToken from 'utils/token';
 import CoordinatorsPage from './coordinators';
 import MatchesPage from './matches';
+import CreateMatchPage from './matches/CreateMatchPage';
 import PlayersPage from './players';
 
 const { Content, Sider } = Layout;
@@ -86,8 +87,14 @@ function HomePage() {
   function setupRoutes() {
     return (
       <Switch>
+        <Route exact path={`${path}`}>
+          <Redirect to={`${path}/matches`} />
+        </Route>
         <Route exact path={`${path}/matches`}>
           <MatchesPage />
+        </Route>
+        <Route exact path={`${path}/matches/create`}>
+          <CreateMatchPage />
         </Route>
         <Route exact path={`${path}/coordinators`}>
           <CoordinatorsPage />
