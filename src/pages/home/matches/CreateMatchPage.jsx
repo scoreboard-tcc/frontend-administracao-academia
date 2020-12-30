@@ -147,7 +147,7 @@ function CreateMatchPage() {
   const [step, setStep] = useState(0);
 
   const scoreboardId = query.get('id') || null;
-  const scoreboardDescription = query.get('ds') || 'Virtual';
+  const scoreboardDescription = query.get('ds') || 'Sem placar';
 
   function renderTitle() {
     return (

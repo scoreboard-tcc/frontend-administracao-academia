@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import useAxios from 'hooks/use-axios';
-import MatchCard from 'pages/home/matches/MatchCard';
+import PublicMatchCard from 'pages/home/matches/PublicMatchCard';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import getSubdomain from 'utils/subdomain';
@@ -132,7 +132,7 @@ function LandingPage() {
   function renderMatch(match) {
     return (
       <List.Item>
-        <MatchCard match={match} />
+        <PublicMatchCard match={match} />
       </List.Item>
     );
   }

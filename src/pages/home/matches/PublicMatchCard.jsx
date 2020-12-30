@@ -1,5 +1,5 @@
 import {
-  ExclamationCircleOutlined, EyeInvisibleOutlined, LoadingOutlined, LockOutlined,
+  ExclamationCircleOutlined, LoadingOutlined, LockOutlined,
 } from '@ant-design/icons';
 import {
   Card, Col, Row, Space, Spin, Tag, Typography,
@@ -68,15 +68,9 @@ function MatchCard({ match }) {
             color="warning"
             style={{ visibility: isControllingMatch() ? 'visible' : 'hidden' }}
           >
-            Alguem está controlando essa partida
+            Você está controlando essa partida
           </Tag>
         </Col>
-
-        { match.listed && !match.listed && (
-        <Col>
-          <EyeInvisibleOutlined title="Partida não listada" />
-        </Col>
-        )}
 
         { match.pin && (
         <Col>

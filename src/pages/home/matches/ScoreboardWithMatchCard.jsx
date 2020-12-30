@@ -4,6 +4,7 @@ import {
 import {
   Card, Col, Row, Space, Spin, Tag, Typography,
 } from 'antd';
+import MatchScore from 'components/MatchScore';
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -62,13 +63,12 @@ function ScoreboardWithMatchCard({ scoreboard }) {
       );
     }
 
-    // TODO: utilizar como componente
     return (
-      <Row style={{ height: 100 }}>
-        <Col>
-          dados do placar
-        </Col>
-      </Row>
+      <MatchScore
+        brokerTopic={scoreboard.match.brokerTopic}
+        player1Name={scoreboard.match.player1Name}
+        player2Name={scoreboard.match.player2Name}
+      />
     );
   }
 

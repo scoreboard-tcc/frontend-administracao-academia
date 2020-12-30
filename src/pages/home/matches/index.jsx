@@ -70,7 +70,7 @@ function MatchesPage() {
     return (
       <>
         {' '}
-        <Divider orientation="left">Placares físicos</Divider>
+        <Divider orientation="left">Placares</Divider>
         <List
           grid={{
             gutter: 24, xs: 1, sm: 2, md: 2, lg: 2, xl: 2, xxl: 4,
@@ -91,7 +91,7 @@ function MatchesPage() {
       <>
         <Row align="middle" gutter={24} style={{ marginTop: 48 }}>
           <Col flex={1}>
-            <Divider orientation="left">Partidas virtuais</Divider>
+            <Divider orientation="left">Partidas sem placar físico</Divider>
           </Col>
           <Col>
             <Button
@@ -99,7 +99,7 @@ function MatchesPage() {
               icon={<PlusOutlined />}
               onClick={openCreateMatchPage}
             >
-              Criar partida virtual
+              Criar partida sem placar
             </Button>
           </Col>
         </Row>
