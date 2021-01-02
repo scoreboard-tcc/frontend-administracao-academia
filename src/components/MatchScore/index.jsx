@@ -13,13 +13,20 @@ function MatchScore({ brokerTopic, player1Name, player2Name }) {
 
   function renderCurrentSet() {
     const currentSet = Number(matchData.Current_Set);
-    const offset = 3 * currentSet;
+    const offset = 2 * currentSet;
 
     return (
       <Row gutter={24}>
-        <Col span={10} />
-        <Col span={3} offset={offset} style={{ textAlign: 'right' }}>
-          <Badge color="blue" />
+        <Col span={13} />
+        <Col span={2} offset={offset} style={{ fontSize: 16, textAlign: 'right' }}>
+          <span style={{
+            backgroundColor: 'rgb(24, 144, 255)',
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            display: 'inline-block',
+          }}
+          />
         </Col>
       </Row>
     );
@@ -28,26 +35,30 @@ function MatchScore({ brokerTopic, player1Name, player2Name }) {
   function renderPlayerRow(playerName, topicSuffix) {
     return (
       <Row gutter={24} align="middle">
-        <Col span={10} style={{ fontSize: 16 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 12 }}>1</Text>
+        <Col span={13} style={{ display: 'flex' }}>
           <Text
-            style={{
-              marginLeft: 8,
-              marginRight: 8,
-            }}
             strong
+            ellipsis
+            style={{ display: 'block' }}
           >
             {playerName}
           </Text>
-          {matchData.Player_Serving === topicSuffix && <Badge color="blue" />}
+          {matchData.Player_Serving === topicSuffix && (
+            <Badge
+              style={{
+                marginLeft: 4,
+              }}
+              color="blue"
+            />
+          )}
         </Col>
-        <Col span={3} style={{ fontSize: 16, textAlign: 'center' }}>
+        <Col span={2} style={{ fontSize: 16, textAlign: 'right' }}>
           {matchData[`Set1_${topicSuffix}`]}
         </Col>
-        <Col span={3} style={{ fontSize: 16, textAlign: 'center' }}>
+        <Col span={2} style={{ fontSize: 16, textAlign: 'right' }}>
           {matchData[`Set2_${topicSuffix}`]}
         </Col>
-        <Col span={3} style={{ fontSize: 16, textAlign: 'center' }}>
+        <Col span={2} style={{ fontSize: 16, textAlign: 'right' }}>
           {matchData[`Set3_${topicSuffix}`]}
         </Col>
         <Col
