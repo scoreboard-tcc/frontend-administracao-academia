@@ -1,15 +1,32 @@
-import React, { useEffect, useState } from 'react';
 import {
-  Col, Row, Space, Typography, message, Badge,
+  Badge, Col, message, Result, Row, Space, Typography,
 } from 'antd';
 import useBroker from 'hooks/use-broker';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
+import {
+  getBrokerTopic, getControlData, removeControlData, removeSubscribeData,
+} from 'utils/tokens';
 
 const { Text } = Typography;
 
-function MatchScore({ brokerTopic, player1Name, player2Name }) {
+function MatchScore({ match, onControlChanged, onMatchFinished }) {
   const broker = useBroker();
 
   const [matchData, setMatchData] = useState({});
+  const [finished, setFinished] = useState(false);
+
+  const matchTopic = useMemo(() => {
+    const topic = getBrokerTopic(match);
+
+    if (!topic) {
+      message.error('O usuário não tem permissão para acompanhar a partida.');
+      return '';
+    }
+
+    return topic;
+  }, [match]);
 
   function renderCurrentSet() {
     const currentSet = Number(matchData.Current_Set);
@@ -62,7 +79,7 @@ function MatchScore({ brokerTopic, player1Name, player2Name }) {
           {matchData[`Set3_${topicSuffix}`]}
         </Col>
         <Col
-          span={3}
+          span={4}
           offset={1}
           style={{
             fontSize: 16,
@@ -79,12 +96,45 @@ function MatchScore({ brokerTopic, player1Name, player2Name }) {
     );
   }
 
+  const checkControllerSequence = useCallback((currentControllerSequence) => {
+    const controlData = getControlData(match.id);
+
+    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
+      removeControlData(match.id);
+
+      if (onControlChanged) {
+        onControlChanged(match);
+      }
+    }
+  }, [match, onControlChanged]);
+
+  const checkIfMatchHasFinished = useCallback((matchWinner) => {
+    if (matchWinner !== 'null' && onMatchFinished && !finished) {
+      setFinished(true);
+      removeControlData(match);
+      removeSubscribeData(match);
+      onMatchFinished(matchWinner);
+    }
+  }, [onMatchFinished, finished, match]);
+
   useEffect(() => {
-    broker.subscribe(`${brokerTopic}/+`);
+    if (!matchTopic) {
+      return () => {};
+    }
+
+    broker.subscribe(`${matchTopic}/+`);
 
     broker.on('message', (fullTopic, data) => {
       try {
         const topic = fullTopic.split('/')[1];
+
+        if (topic === 'Controller_Sequence') {
+          checkControllerSequence(Number(data.toString()));
+        }
+
+        if (topic === 'Match_Winner') {
+          checkIfMatchHasFinished(data.toString());
+        }
 
         setMatchData((prevState) => ({ ...prevState, [topic]: data.toString() }));
       } catch (error) {
@@ -93,17 +143,26 @@ function MatchScore({ brokerTopic, player1Name, player2Name }) {
     });
 
     return () => {
-      broker.unsubscribe(`${brokerTopic}/+`);
+      broker.unsubscribe(`${matchTopic}/+`);
       broker.removeAllListeners();
     };
-  }, [brokerTopic, broker]);
+  }, [matchTopic, broker, checkControllerSequence, checkIfMatchHasFinished]);
+
+  if (finished) {
+    return (
+      <Result
+        title="Partida finalizada."
+        subTitle="Em alguns segundos você será redirecionado para os placares."
+      />
+    );
+  }
 
   return (
-    <div style={{ paddingTop: 16 }}>
+    <div style={{ paddingTop: 16, paddingRight: 8 }}>
       {renderCurrentSet()}
       <Space direction="vertical" style={{ display: 'flex' }} size="middle">
-        {renderPlayerRow(player1Name, 'A')}
-        {renderPlayerRow(player2Name, 'B')}
+        {renderPlayerRow(match.player1Name, 'A')}
+        {renderPlayerRow(match.player2Name, 'B')}
       </Space>
     </div>
   );

@@ -162,7 +162,7 @@ function CoordinatorsPage() {
   }
 
   return (
-    <Layout style={{ backgroundColor: 'white' }}>
+    <Layout style={{ backgroundColor: 'white', padding: 16 }}>
       <Form>
         <Row>
           <Col span={8}>

@@ -84,9 +84,8 @@ function PlayersPage() {
   }
 
   return (
-    <Layout style={{ backgroundColor: 'white' }}>
+    <Layout style={{ backgroundColor: 'white', padding: 16 }}>
       <Content>
-
         <Tabs defaultActiveKey="1" destroyInactiveTabPane>
           <TabPane tab="Jogadores vinculados à academia" key="1">
             <AcademyPlayers onCadastrarClick={onCadastrarClick} updateData={updateData} />

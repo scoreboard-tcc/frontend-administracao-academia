@@ -1,5 +1,5 @@
 import {
-  DashboardOutlined, InsertRowBelowOutlined, MenuOutlined, TeamOutlined, UsergroupAddOutlined,
+  InsertRowBelowOutlined, MenuOutlined, TeamOutlined, UsergroupAddOutlined,
 } from '@ant-design/icons';
 import {
   Avatar, Button, Col, Dropdown, Layout, Menu, Row, Skeleton, Typography,
@@ -10,10 +10,11 @@ import {
   Link, Redirect, Route, Switch, useHistory, useLocation, useRouteMatch,
 } from 'react-router-dom';
 import { setAuth } from 'store/actions/auth';
-import getAuthenticationToken from 'utils/token';
+import getAuthenticationToken from 'utils/auth';
 import CoordinatorsPage from './coordinators';
 import MatchesPage from './matches';
 import CreateMatchPage from './matches/CreateMatchPage';
+import MatchDetailsPage from './matches/details/MatchDetailsPage';
 import PlayersPage from './players';
 
 const { Content, Sider } = Layout;
@@ -102,6 +103,9 @@ function HomePage() {
         <Route exact path={`${path}/players`}>
           <PlayersPage />
         </Route>
+        <Route exact path={`${path}/match/:id`}>
+          <MatchDetailsPage />
+        </Route>
       </Switch>
     );
   }
@@ -118,7 +122,7 @@ function HomePage() {
         </Sider>
         <Layout>
           <Content style={{
-            margin: 16, padding: 16, backgroundColor: 'white', minHeight: 'unset',
+            backgroundColor: 'white', minHeight: 'unset',
           }}
           >
             {setupRoutes()}

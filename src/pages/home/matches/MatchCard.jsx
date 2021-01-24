@@ -6,10 +6,14 @@ import {
 } from 'antd';
 import MatchScore from 'components/MatchScore';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { getPublishToken } from 'utils/tokens';
 
 const { Text } = Typography;
 
-function MatchCard({ match }) {
+function MatchCard({ match, onMatchFinished }) {
+  const history = useHistory();
+
   function renderMatchStatus() {
     return (
       <Text type="secondary" style={{ fontSize: 14 }}>
@@ -48,15 +52,14 @@ function MatchCard({ match }) {
   function renderContent() {
     return (
       <MatchScore
-        brokerTopic={match.brokerTopic}
-        player1Name={match.player1Name}
-        player2Name={match.player2Name}
+        match={match}
+        onMatchFinished={onMatchFinished}
       />
     );
   }
 
   function isControllingMatch() {
-    return false; // TODO: implementar baseado nos tokens
+    return getPublishToken(match);
   }
 
   function renderFooter() {
@@ -66,7 +69,7 @@ function MatchCard({ match }) {
           <Tag
             icon={<ExclamationCircleOutlined />}
             color="warning"
-            style={{ visibility: isControllingMatch() ? 'visible' : 'hidden' }}
+            style={{ visibility: isControllingMatch() ? 'hidden' : 'visible' }}
           >
             Alguem está controlando essa partida
           </Tag>
@@ -88,12 +91,17 @@ function MatchCard({ match }) {
     );
   }
 
+  function onCardClick() {
+    history.push(`match/${match.id}`);
+  }
+
   return (
     <Card
       title={renderTitle()}
       bodyStyle={{ padding: 12 }}
       headStyle={{ padding: '0 12px' }}
       style={{ cursor: 'pointer' }}
+      onClick={onCardClick}
     >
       {renderContent()}
       {renderFooter()}

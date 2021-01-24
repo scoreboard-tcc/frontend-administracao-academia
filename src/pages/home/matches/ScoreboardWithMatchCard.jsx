@@ -7,10 +7,11 @@ import {
 import MatchScore from 'components/MatchScore';
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { getPublishToken } from 'utils/tokens';
 
 const { Text } = Typography;
 
-function ScoreboardWithMatchCard({ scoreboard }) {
+function ScoreboardWithMatchCard({ scoreboard, onMatchFinished }) {
   const { url } = useRouteMatch();
   const history = useHistory();
 
@@ -65,15 +66,14 @@ function ScoreboardWithMatchCard({ scoreboard }) {
 
     return (
       <MatchScore
-        brokerTopic={scoreboard.match.brokerTopic}
-        player1Name={scoreboard.match.player1Name}
-        player2Name={scoreboard.match.player2Name}
+        match={scoreboard.match}
+        onMatchFinished={onMatchFinished}
       />
     );
   }
 
   function isControllingMatch() {
-    return scoreboard.match; // TODO: implementar baseado nos tokens
+    return getPublishToken(scoreboard.match);
   }
 
   function renderFooter() {
@@ -83,7 +83,7 @@ function ScoreboardWithMatchCard({ scoreboard }) {
           <Tag
             icon={<ExclamationCircleOutlined />}
             color="warning"
-            style={{ visibility: isControllingMatch() ? 'visible' : 'hidden' }}
+            style={{ visibility: isControllingMatch() || !scoreboard.match ? 'hidden' : 'visible' }}
           >
             Alguem está controlando essa partida
           </Tag>
@@ -108,7 +108,10 @@ function ScoreboardWithMatchCard({ scoreboard }) {
   function onCardClick() {
     if (!scoreboard.match) {
       history.push(`${url}/create?id=${scoreboard.id}&ds=${scoreboard.description}`);
+      return;
     }
+
+    history.push(`match/${scoreboard.match.id}`);
   }
 
   return (

@@ -48,9 +48,7 @@ function MatchCard({ match }) {
   function renderContent() {
     return (
       <MatchScore
-        brokerTopic={match.brokerTopic}
-        player1Name={match.player1Name}
-        player2Name={match.player2Name}
+        match={match}
       />
     );
   }

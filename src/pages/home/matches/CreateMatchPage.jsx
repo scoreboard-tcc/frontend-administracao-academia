@@ -9,6 +9,7 @@ import React, {
   useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { putControlData } from 'utils/tokens';
 import './CreateMatchPage.css';
 
 const { Title, Text } = Typography;
@@ -168,7 +169,7 @@ function CreateMatchPage() {
 
   async function onSubmit(values) {
     try {
-      await axios.post('/match', {
+      const { data } = await axios.post('/match', {
         scoreboardId,
         duration: values.duration,
         player1Id: typeof values.player1 === 'number' ? values.player1 : null,
@@ -183,10 +184,19 @@ function CreateMatchPage() {
       });
 
       await message.success(
-        'A partida foi criada com sucesso! Em breve você será redirecionado para a tela de controle.',
+        {
+          content: 'A partida foi criada com sucesso! Em breve você será redirecionado para a tela de controle.',
+          duration: 2,
+        },
       );
 
-      history.goBack();
+      putControlData(data.id, {
+        controllerSequence: data.controllerSequence,
+        expirationDate: data.expirationDate,
+        publishToken: data.publishToken,
+      });
+
+      history.push(`/home/match/${data.id}`);
     } catch (error) {
       const { response = {} } = error;
       const { data = {} } = response;
@@ -359,7 +369,9 @@ function CreateMatchPage() {
   return (
     <Form
       form={form}
-      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      style={{
+        display: 'flex', flexDirection: 'column', height: '100%', padding: 16,
+      }}
       size="large"
       onFinish={onSubmit}
       initialValues={{

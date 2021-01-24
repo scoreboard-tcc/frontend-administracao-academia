@@ -1,10 +1,15 @@
 import AuthPage from 'pages/auth';
 import HomePage from 'pages/home';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { clearExpiredTokens } from 'utils/tokens';
 import LandingPage from '../pages/landing';
 
 function Router() {
+  useEffect(() => {
+    clearExpiredTokens();
+  }, []);
+
   return (
     <BrowserRouter>
       <Switch>

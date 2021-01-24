@@ -5,7 +5,7 @@ import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import getSubdomain from 'utils/subdomain';
-import getAuthenticationToken from 'utils/token';
+import getAuthenticationToken from 'utils/auth';
 
 const { Content } = Layout;
 const { Title } = Typography;

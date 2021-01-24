@@ -11,6 +11,7 @@
     "axios": "^0.20.0",
     "customize-cra": "^1.0.0",
     "customize-cra-react-refresh": "^1.1.0",
+    "date-fns": "^2.16.1",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
     "html-to-draftjs": "^1.5.0",

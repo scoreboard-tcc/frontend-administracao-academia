@@ -50,10 +50,15 @@ function MatchesPage() {
     }
   }, [axios]);
 
+  const onMatchFinished = useCallback(() => {
+    requestScoreboardsWithMatches();
+    requestVirtualMatches();
+  }, [requestScoreboardsWithMatches, requestVirtualMatches]);
+
   function renderScoreboardWithMatch(scoreboard) {
     return (
       <List.Item>
-        <ScoreboardWithMatchCard scoreboard={scoreboard} />
+        <ScoreboardWithMatchCard scoreboard={scoreboard} onMatchFinished={onMatchFinished} />
       </List.Item>
     );
   }
@@ -61,7 +66,7 @@ function MatchesPage() {
   function renderVirtualMatch(match) {
     return (
       <List.Item>
-        <MatchCard match={match} />
+        <MatchCard match={match} onMatchFinished={onMatchFinished} />
       </List.Item>
     );
   }
@@ -133,7 +138,7 @@ function MatchesPage() {
   }, [requestScoreboardsWithMatches, requestVirtualMatches]);
 
   return (
-    <Layout style={{ backgroundColor: 'white' }}>
+    <Layout style={{ backgroundColor: 'white', padding: 16 }}>
       <Row style={{ marginBottom: 24 }} justify="end">
         <Col flex={1}>
           <Title level={4}>Partidas em andamento </Title>
