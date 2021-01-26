@@ -27,7 +27,7 @@ function MatchDetailsPage() {
       setMatch(data);
     } catch (error) {
       message.error('Ocorreu um erro ao carregar a partida');
-      history.replace('/home/matches/');
+      history.replace('/home/matches');
     } finally {
       setLoading(false);
     }

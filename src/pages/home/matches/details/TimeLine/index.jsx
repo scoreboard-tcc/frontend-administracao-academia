@@ -44,8 +44,8 @@ function TimeLine({ match }) {
     }
   }, [axios, matchTopic]);
 
-  function renderLog(log) {
-    return <Timeline.Item key={log.createdAt}>{log.message}</Timeline.Item>;
+  function renderLog(log, index) {
+    return <Timeline.Item key={`${log.createdAt}_${index}`}>{log.message}</Timeline.Item>;
   }
 
   useEffect(() => {
