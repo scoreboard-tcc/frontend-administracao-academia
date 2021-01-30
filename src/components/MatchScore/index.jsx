@@ -122,7 +122,7 @@ function MatchScore({ match, onControlChanged, onMatchFinished }) {
       return () => {};
     }
 
-    broker.subscribe(`${matchTopic}/+`);
+    broker.subscribe(`${matchTopic}/+`, { qos: 1 });
 
     broker.on('message', (fullTopic, data) => {
       try {

@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import MatchScore from 'components/MatchScore';
+import useAxios from 'hooks/use-axios';
 import useBroker from 'hooks/use-broker';
 import React, {
   useCallback, useEffect, useMemo, useRef, useState,
@@ -101,7 +102,10 @@ function ScoreModal({
   );
 }
 
-function ControlCard({ match }) {
+function ControlCard({
+  match, showUndoRedo = false,
+}) {
+  const axios = useAxios();
   const broker = useBroker();
   const history = useHistory();
 
@@ -109,6 +113,9 @@ function ControlCard({ match }) {
   const [hasWinner, setHasWinner] = useState(false);
   const [scoreModalVisible, setScoreModalVisible] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+
+  const [canUndo, setCanUndo] = useState(match.canUndo);
+  const [canRedo, setCanRedo] = useState(match.canRedo);
 
   const publishToken = useMemo(() => getPublishToken(match), [match]);
 
@@ -136,7 +143,7 @@ function ControlCard({ match }) {
       score.currentSet.toString(),
       score.setsWon[0].toString(),
       score.setsWon[1].toString(),
-      score.playerServing.toString(),
+      score.playerServing !== null ? score.playerServing.toString() : 'null',
       score.matchWinner !== null ? score.matchWinner.toString() : 'null',
       score.currentState.toString(),
       player.toString(),
@@ -224,6 +231,47 @@ function ControlCard({ match }) {
     return [];
   }
 
+  async function onUndoClick() {
+    try {
+      await axios.post('/score/undo', {}, {
+        headers: {
+          'x-publish-token': publishToken,
+        },
+      });
+    } catch (error) {
+      message.error('Não foi possível desfazer a jogada');
+    }
+  }
+
+  async function onRedoClick() {
+    try {
+      await axios.post('/score/redo', {}, {
+        headers: {
+          'x-publish-token': publishToken,
+        },
+      });
+    } catch (error) {
+      message.error('Não foi possível refazer a jogada');
+    }
+  }
+
+  function renderCardHeader() {
+    if (!showUndoRedo) {
+      return null;
+    }
+
+    return (
+      <Row justify="center">
+        <Col>
+          <Button disabled={!canUndo} onClick={onUndoClick}>Desfazer jogada</Button>
+        </Col>
+        <Col>
+          <Button disabled={!canRedo} onClick={onRedoClick}>Refazer jogada</Button>
+        </Col>
+      </Row>
+    );
+  }
+
   const onControlChanged = useCallback(() => {
     alert('control changed');
   }, []);
@@ -241,7 +289,7 @@ function ControlCard({ match }) {
       return () => { };
     }
 
-    broker.subscribe(`${matchTopic}/+`);
+    broker.subscribe(`${matchTopic}/+`, { qos: 1 });
 
     broker.on('message', (fullTopic, data) => {
       try {
@@ -251,6 +299,14 @@ function ControlCard({ match }) {
           setHasWinner(true);
         }
 
+        if (topic === 'Can_Undo') {
+          setCanUndo(data.toString() === 'true');
+        }
+
+        if (topic === 'Can_Redo') {
+          setCanRedo(data.toString() === 'true');
+        }
+
         matchData.current[topic] = data.toString();
       } catch (error) {
         message.error('Ocorreu um erro ao receber as informações do broker');
@@ -258,13 +314,17 @@ function ControlCard({ match }) {
     });
 
     return () => {
-      broker.unsubscribe(`${matchTopic}/Score`);
+      broker.unsubscribe(`${matchTopic}/+`);
       broker.removeAllListeners();
     };
-  }, [broker, matchTopic]);
+  }, [broker, matchTopic, setCanRedo, setCanUndo]);
 
   return (
-    <Card bodyStyle={{ paddingTop: 0 }} actions={renderActions()}>
+    <Card
+      title={renderCardHeader()}
+      bodyStyle={{ paddingTop: 0 }}
+      actions={renderActions()}
+    >
       <ScoreModal
         match={match}
         player={selectedPlayer}
