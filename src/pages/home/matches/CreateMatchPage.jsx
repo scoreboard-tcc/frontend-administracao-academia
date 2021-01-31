@@ -194,6 +194,7 @@ function CreateMatchPage() {
         controllerSequence: data.controllerSequence,
         expirationDate: data.expirationDate,
         publishToken: data.publishToken,
+        refreshToken: data.refreshToken,
       });
 
       history.push(`/home/match/${data.id}`);

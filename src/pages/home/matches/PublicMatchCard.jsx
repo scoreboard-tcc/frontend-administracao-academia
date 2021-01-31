@@ -46,6 +46,8 @@ function MatchCard({ match }) {
   }
 
   function renderContent() {
+    // TODO: se tiver pin e não tiver o brokerTopic salvo, mostrar cadeado
+
     return (
       <MatchScore
         match={match}

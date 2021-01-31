@@ -1,8 +1,9 @@
-import { ControlOutlined, HistoryOutlined } from '@ant-design/icons';
+import { ControlOutlined, HistoryOutlined, LinkOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
 import React, { useState } from 'react';
 import ActionsTab from './tabs/ActionsTab';
 import ControlTab from './tabs/ControlTab';
+import LinksTab from './tabs/LinksTab';
 
 const { TabPane } = Tabs;
 
@@ -32,6 +33,19 @@ function MatchTabs({ match }) {
         key="actions"
       >
         <ActionsTab
+          match={match}
+        />
+      </TabPane>
+      <TabPane
+        tab={(
+          <span>
+            <LinkOutlined />
+            Links
+          </span>
+      )}
+        key="links"
+      >
+        <LinksTab
           match={match}
         />
       </TabPane>

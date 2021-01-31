@@ -31,11 +31,13 @@ export function clearExpiredTokens() {
 
 export function putControlData(matchId, {
   publishToken,
+  refreshToken,
   expirationDate,
   controllerSequence,
 }) {
   localStorage.setItem(`match-token.control-${matchId}`, JSON.stringify({
     publishToken,
+    refreshToken,
     expirationDate,
     controllerSequence,
   }));

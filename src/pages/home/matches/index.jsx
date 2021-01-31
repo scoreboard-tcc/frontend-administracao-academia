@@ -98,7 +98,7 @@ function MatchesPage() {
           <Col flex={1}>
             <Divider orientation="left">Partidas sem placar físico</Divider>
           </Col>
-          <Col>
+          <Col lg={{ flex: 0 }} sm={{ flex: 1 }}>
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -112,6 +112,7 @@ function MatchesPage() {
           grid={{
             gutter: 24, xs: 1, sm: 2, md: 2, lg: 2, xl: 2, xxl: 4,
           }}
+          style={{ marginTop: 16 }}
           dataSource={virtualMatches}
           renderItem={renderVirtualMatch}
         />
