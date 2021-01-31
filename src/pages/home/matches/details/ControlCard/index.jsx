@@ -281,7 +281,7 @@ function ControlCard({
 
     setTimeout(() => {
       history.replace('/home/matches');
-    }, 2000);
+    }, 5000);
   }, [history]);
 
   useEffect(() => {
