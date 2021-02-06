@@ -5,13 +5,15 @@ import {
   Card, Col, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
-import React from 'react';
+import useBroker from 'hooks/use-broker';
+import React, { useCallback, useEffect } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { getPublishToken } from 'utils/tokens';
+import { getControlData, getPublishToken, removeControlData } from 'utils/tokens';
 
 const { Text } = Typography;
 
-function ScoreboardWithMatchCard({ scoreboard, onMatchFinished }) {
+function ScoreboardWithMatchCard({ scoreboard, onMatchFinished, onControlChanged }) {
+  const broker = useBroker();
   const { url } = useRouteMatch();
   const history = useHistory();
 
@@ -113,6 +115,37 @@ function ScoreboardWithMatchCard({ scoreboard, onMatchFinished }) {
 
     history.push(`match/${scoreboard.match.id}`);
   }
+
+  const checkControllerSequence = useCallback(async (currentControllerSequence) => {
+    const controlData = getControlData(scoreboard.match.id);
+
+    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
+      removeControlData(scoreboard.match.id);
+
+      onControlChanged();
+    }
+  }, [scoreboard, onControlChanged]);
+
+  useEffect(() => {
+    if (!scoreboard.match) {
+      return () => { };
+    }
+
+    broker.subscribe(`${scoreboard.match.brokerTopic}/Controller_Sequence`, { qos: 1 });
+
+    broker.on('message', (fullTopic, data) => {
+      const topic = fullTopic.split('/')[1];
+
+      if (topic === 'Controller_Sequence') {
+        checkControllerSequence(Number(data.toString()));
+      }
+    });
+
+    return () => {
+      broker.unsubscribe(`${scoreboard.match.brokerTopic}/Controller_Sequence`);
+      broker.removeAllListeners();
+    };
+  }, [broker, scoreboard, checkControllerSequence]);
 
   return (
     <Card

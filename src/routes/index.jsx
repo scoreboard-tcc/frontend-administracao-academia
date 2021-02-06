@@ -1,6 +1,7 @@
 import AuthPage from 'pages/auth';
 import HomePage from 'pages/home';
 import MatchDetailsPage from 'pages/home/matches/details/MatchDetailsPage';
+import TokenRedirectPage from 'pages/tokenRedirect';
 import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { clearExpiredTokens } from 'utils/tokens';
@@ -25,6 +26,9 @@ function Router() {
         </Route>
         <Route exact path="/match/:id">
           <MatchDetailsPage />
+        </Route>
+        <Route path="/token-redirect">
+          <TokenRedirectPage />
         </Route>
       </Switch>
     </BrowserRouter>

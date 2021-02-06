@@ -129,10 +129,14 @@ function LandingPage() {
     );
   }
 
+  const onControlChanged = useCallback(() => {
+    window.location.reload();
+  }, []);
+
   function renderMatch(match) {
     return (
       <List.Item>
-        <PublicMatchCard match={match} />
+        <PublicMatchCard match={match} onControlChanged={onControlChanged} />
       </List.Item>
     );
   }

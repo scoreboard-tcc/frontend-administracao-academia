@@ -14,6 +14,7 @@ const { Title } = Typography;
 
 function MatchesPage() {
   const axios = useAxios();
+
   const { url } = useRouteMatch();
   const history = useHistory();
 
@@ -55,10 +56,18 @@ function MatchesPage() {
     requestVirtualMatches();
   }, [requestScoreboardsWithMatches, requestVirtualMatches]);
 
+  const onControlChanged = useCallback(() => {
+    window.location.reload();
+  }, []);
+
   function renderScoreboardWithMatch(scoreboard) {
     return (
       <List.Item>
-        <ScoreboardWithMatchCard scoreboard={scoreboard} onMatchFinished={onMatchFinished} />
+        <ScoreboardWithMatchCard
+          scoreboard={scoreboard}
+          onMatchFinished={onMatchFinished}
+          onControlChanged={onControlChanged}
+        />
       </List.Item>
     );
   }
@@ -66,7 +75,11 @@ function MatchesPage() {
   function renderVirtualMatch(match) {
     return (
       <List.Item>
-        <MatchCard match={match} onMatchFinished={onMatchFinished} />
+        <MatchCard
+          match={match}
+          onMatchFinished={onMatchFinished}
+          onControlChanged={onControlChanged}
+        />
       </List.Item>
     );
   }

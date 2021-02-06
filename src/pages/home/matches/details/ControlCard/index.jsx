@@ -272,10 +272,6 @@ function ControlCard({
     );
   }
 
-  const onControlChanged = useCallback(() => {
-    alert('control changed');
-  }, []);
-
   const onMatchFinished = useCallback(() => {
     message.info('A partida terminou! Em alguns instantes você será redirecionado para a lista de placares.');
 
@@ -333,7 +329,6 @@ function ControlCard({
         onScore={onScore}
       />
       <MatchScore
-        onControlChanged={onControlChanged}
         onMatchFinished={onMatchFinished}
         match={match}
       />

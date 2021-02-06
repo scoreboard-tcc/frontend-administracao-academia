@@ -3,16 +3,21 @@ import {
 } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import useAxios from 'hooks/use-axios';
+import useBroker from 'hooks/use-broker';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { getPublishToken, putSubscribeData } from 'utils/tokens';
+import {
+  getBrokerTopic, getControlData, getPublishToken, putSubscribeData, removeControlData,
+} from 'utils/tokens';
 import MatchHeader from './MatchHeader';
 import MatchTabs from './MatchTabs';
 import ControlTab from './tabs/ControlTab';
 
 function MatchDetailsPage({ isCoordinator = false }) {
+  const broker = useBroker();
+
   const { id: matchId } = useParams();
   const { search } = useLocation();
   const query = useMemo(() => new URLSearchParams(search), [search]);
@@ -24,6 +29,20 @@ function MatchDetailsPage({ isCoordinator = false }) {
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(false);
   const [wrongPin, setWrongPin] = useState(false);
+
+  const matchTopic = useMemo(() => {
+    if (!match) {
+      return '';
+    }
+
+    const topic = getBrokerTopic(match);
+
+    if (!topic) {
+      return '';
+    }
+
+    return topic;
+  }, [match]);
 
   const requestMatch = useCallback(async () => {
     setLoading(true);
@@ -62,6 +81,17 @@ function MatchDetailsPage({ isCoordinator = false }) {
     }
   }, [axios, matchId, requestMatch, pin]);
 
+  const checkControllerSequence = useCallback(async (currentControllerSequence) => {
+    const controlData = getControlData(match.id);
+
+    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
+      removeControlData(match.id);
+
+      await message.warning('Outra pessoa está controlando esta partida.', 1);
+      window.location.reload();
+    }
+  }, [match]);
+
   useEffect(() => {
     if (!pin) {
       requestMatch();
@@ -69,6 +99,31 @@ function MatchDetailsPage({ isCoordinator = false }) {
       checkPin(pin);
     }
   }, [requestMatch, checkPin, pin]);
+
+  useEffect(() => {
+    if (!match || !matchTopic) {
+      return () => {};
+    }
+
+    broker.subscribe(`${matchTopic}/Controller_Sequence`, { qos: 1 });
+
+    broker.on('message', (fullTopic, data) => {
+      try {
+        const topic = fullTopic.split('/')[1];
+
+        if (topic === 'Controller_Sequence') {
+          checkControllerSequence(Number(data.toString()));
+        }
+      } catch (error) {
+        message.error('Ocorreu um erro ao receber as informações do broker');
+      }
+    });
+
+    return () => {
+      broker.unsubscribe(`${matchTopic}/Controller_Sequence`);
+      broker.removeAllListeners();
+    };
+  }, [broker, matchTopic, match, checkControllerSequence]);
 
   if (wrongPin) {
     return (

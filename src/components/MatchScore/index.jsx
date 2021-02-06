@@ -6,12 +6,12 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import {
-  getBrokerTopic, getControlData, removeControlData, removeSubscribeData,
+  getBrokerTopic, removeControlData, removeSubscribeData,
 } from 'utils/tokens';
 
 const { Text } = Typography;
 
-function MatchScore({ match, onControlChanged, onMatchFinished }) {
+function MatchScore({ match, onMatchFinished }) {
   const broker = useBroker();
 
   const [matchData, setMatchData] = useState({});
@@ -96,18 +96,6 @@ function MatchScore({ match, onControlChanged, onMatchFinished }) {
     );
   }
 
-  const checkControllerSequence = useCallback((currentControllerSequence) => {
-    const controlData = getControlData(match.id);
-
-    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
-      removeControlData(match.id);
-
-      if (onControlChanged) {
-        onControlChanged(match);
-      }
-    }
-  }, [match, onControlChanged]);
-
   const checkIfMatchHasFinished = useCallback((matchWinner) => {
     if (matchWinner !== 'null' && onMatchFinished && !finished) {
       setFinished(true);
@@ -128,10 +116,6 @@ function MatchScore({ match, onControlChanged, onMatchFinished }) {
       try {
         const topic = fullTopic.split('/')[1];
 
-        if (topic === 'Controller_Sequence') {
-          checkControllerSequence(Number(data.toString()));
-        }
-
         if (topic === 'Match_Winner') {
           checkIfMatchHasFinished(data.toString());
         }
@@ -146,7 +130,7 @@ function MatchScore({ match, onControlChanged, onMatchFinished }) {
       broker.unsubscribe(`${matchTopic}/+`);
       broker.removeAllListeners();
     };
-  }, [matchTopic, broker, checkControllerSequence, checkIfMatchHasFinished]);
+  }, [matchTopic, broker, checkIfMatchHasFinished]);
 
   if (finished) {
     return (

@@ -6,15 +6,21 @@ import {
 } from 'antd';
 import MatchScore from 'components/MatchScore';
 import useAxios from 'hooks/use-axios';
-import React, { useMemo, useState } from 'react';
+import useBroker from 'hooks/use-broker';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { useHistory } from 'react-router-dom';
-import { getBrokerTopic, getPublishToken, putSubscribeData } from 'utils/tokens';
+import {
+  getBrokerTopic, getControlData, getPublishToken, putSubscribeData, removeControlData,
+} from 'utils/tokens';
 
 const { useForm } = Form;
 const { Text, Title } = Typography;
 
-function MatchCard({ match }) {
+function MatchCard({ match, onControlChanged }) {
   const axios = useAxios();
+  const broker = useBroker();
   const history = useHistory();
   const [form] = useForm();
 
@@ -168,6 +174,37 @@ function MatchCard({ match }) {
       </Row>
     );
   }
+
+  const checkControllerSequence = useCallback(async (currentControllerSequence) => {
+    const controlData = getControlData(match.id);
+
+    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
+      removeControlData(match.id);
+
+      onControlChanged();
+    }
+  }, [onControlChanged, match.id]);
+
+  useEffect(() => {
+    if (!matchTopic) {
+      return () => { };
+    }
+
+    broker.subscribe(`${matchTopic}/Controller_Sequence`, { qos: 1 });
+
+    broker.on('message', (fullTopic, data) => {
+      const topic = fullTopic.split('/')[1];
+
+      if (topic === 'Controller_Sequence') {
+        checkControllerSequence(Number(data.toString()));
+      }
+    });
+
+    return () => {
+      broker.unsubscribe(`${matchTopic}/Controller_Sequence`);
+      broker.removeAllListeners();
+    };
+  }, [broker, matchTopic, checkControllerSequence]);
 
   return (
     <>

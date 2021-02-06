@@ -1,14 +1,16 @@
 import { QrcodeOutlined, ShareAltOutlined } from '@ant-design/icons';
 import {
-  Button, Col, Input, Modal, Row, Typography,
+  Button, Col, Input, message, Modal, Row, Typography,
 } from 'antd';
+import useAxios from 'hooks/use-axios';
 import QRCode from 'qrcode.react';
 import React, { useMemo, useState } from 'react';
-import { getControlData } from 'utils/tokens';
+import { getControlData, putControlData, putSubscribeData } from 'utils/tokens';
 
 const { Text } = Typography;
 
 function LinksTab({ match }) {
+  const axios = useAxios();
   const [qrCodeValue, setQrCodeValue] = useState('');
 
   const controlData = useMemo(() => getControlData(match.id), [match.id]);
@@ -40,7 +42,7 @@ function LinksTab({ match }) {
   }
 
   function shareControlQrCode() {
-    showQrCodeModal(controlData.refreshToken);
+    showQrCodeModal(refreshUrl);
   }
 
   function shareControlLink() {
@@ -118,12 +120,36 @@ function LinksTab({ match }) {
     );
   }
 
+  async function takeControl() {
+    try {
+      const { data } = await axios.post('/match/takeControl', {
+        matchId: match.id,
+      });
+
+      putControlData(data.matchId, {
+        publishToken: data.publishToken,
+        refreshToken: data.refreshToken,
+        expirationDate: data.expirationDate,
+        controllerSequence: data.controllerSequence,
+      });
+
+      putSubscribeData(data.matchId, {
+        brokerTopic: data.brokerTopic,
+        expirationDate: data.expirationDate,
+      });
+
+      window.location.reload();
+    } catch (error) {
+      message.error('Não foi possível recuperar o controle da partida.');
+    }
+  }
+
   function renderTakeControlButton() {
     if (controlData) {
       return null;
     }
 
-    return <Button danger>Recuperar o controle da partida</Button>;
+    return <Button onClick={takeControl} danger>Recuperar o controle da partida</Button>;
   }
 
   return (

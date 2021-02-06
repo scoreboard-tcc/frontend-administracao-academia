@@ -39,7 +39,7 @@ function ActionsTab({
       {renderSomeoneIsControlling()}
       <ControlCard
         match={match}
-        showUndoRedo
+        showUndoRedo={publishToken}
       />
       <TimeLine match={match} />
     </>

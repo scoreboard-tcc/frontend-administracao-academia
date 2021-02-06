@@ -53,8 +53,8 @@ export function getControlData(matchId) {
   }
 }
 
-export function removeControlData(match) {
-  localStorage.removeItem(`match-token.control-${match.id}`);
+export function removeControlData(matchId) {
+  localStorage.removeItem(`match-token.control-${matchId}`);
 }
 
 export function removeSubscribeData(match) {

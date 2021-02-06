@@ -5,14 +5,16 @@ import {
   Card, Col, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
-import React from 'react';
+import useBroker from 'hooks/use-broker';
+import React, { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getPublishToken } from 'utils/tokens';
+import { getControlData, getPublishToken, removeControlData } from 'utils/tokens';
 
 const { Text } = Typography;
 
-function MatchCard({ match, onMatchFinished }) {
+function MatchCard({ match, onMatchFinished, onControlChanged }) {
   const history = useHistory();
+  const broker = useBroker();
 
   function renderMatchStatus() {
     return (
@@ -94,6 +96,37 @@ function MatchCard({ match, onMatchFinished }) {
   function onCardClick() {
     history.push(`match/${match.id}`);
   }
+
+  const checkControllerSequence = useCallback(async (currentControllerSequence) => {
+    const controlData = getControlData(match.id);
+
+    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
+      removeControlData(match.id);
+
+      onControlChanged();
+    }
+  }, [onControlChanged, match.id]);
+
+  useEffect(() => {
+    if (!match) {
+      return () => { };
+    }
+
+    broker.subscribe(`${match.brokerTopic}/Controller_Sequence`, { qos: 1 });
+
+    broker.on('message', (fullTopic, data) => {
+      const topic = fullTopic.split('/')[1];
+
+      if (topic === 'Controller_Sequence') {
+        checkControllerSequence(Number(data.toString()));
+      }
+    });
+
+    return () => {
+      broker.unsubscribe(`${match.brokerTopic}/Controller_Sequence`);
+      broker.removeAllListeners();
+    };
+  }, [broker, match, checkControllerSequence]);
 
   return (
     <Card
