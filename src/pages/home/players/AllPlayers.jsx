@@ -28,7 +28,7 @@ function AllPlayers({ onCadastrarClick, updateData }) {
 
   useEffect(() => {
     requestDataSource();
-  }, [updateData]);
+  }, [updateData, requestDataSource]);
 
   function onSearch(value) {
     requestDataSource(value);
@@ -52,7 +52,7 @@ function AllPlayers({ onCadastrarClick, updateData }) {
   function renderActions(player) {
     return (
       <Space>
-        <a onClick={() => onLink(player)}>Vincular à academia</a>
+        <Button type="link" onClick={() => onLink(player)}>Vincular à academia</Button>
       </Space>
     );
   }
