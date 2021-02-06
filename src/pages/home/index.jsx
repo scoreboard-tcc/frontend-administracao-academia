@@ -104,7 +104,7 @@ function HomePage() {
           <PlayersPage />
         </Route>
         <Route exact path={`${path}/match/:id`}>
-          <MatchDetailsPage />
+          <MatchDetailsPage isCoordinator />
         </Route>
       </Switch>
     );

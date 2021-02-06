@@ -1,13 +1,16 @@
+import { LeftOutlined } from '@ant-design/icons';
 import {
   Col, Layout, Row, Typography,
 } from 'antd';
 import { format, intervalToDuration } from 'date-fns';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Header } = Layout;
 
-function MatchHeader({ match }) {
+function MatchHeader({ match, isCoordinator = false }) {
+  const history = useHistory();
   const [duration, setDuration] = useState('');
 
   const updateDuration = useCallback(() => {
@@ -24,6 +27,10 @@ function MatchHeader({ match }) {
     setDuration(format(date, 'HH:mm:ss'));
   }, [match.startedAt]);
 
+  function onBackButtonClick() {
+    history.replace('/');
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
       updateDuration();
@@ -33,9 +40,17 @@ function MatchHeader({ match }) {
   }, [updateDuration]);
 
   return (
-    <Header style={{ height: 140, padding: 24 }}>
-      <Row justify="center">
-        <Col>
+    <Header style={{ height: 160, padding: 24 }}>
+      <Row align="middle">
+        <Col span={8}>
+          {!isCoordinator && (
+          <LeftOutlined
+            onClick={onBackButtonClick}
+            style={{ color: 'white', fontSize: 24 }}
+          />
+          )}
+        </Col>
+        <Col span={8} style={{ textAlign: 'center' }}>
           <Title
             level={4}
             style={{ color: 'white' }}
@@ -43,6 +58,7 @@ function MatchHeader({ match }) {
             {match.description}
           </Title>
         </Col>
+        <Col span={8} />
       </Row>
       <Row justify="center" style={{ height: 20 }}>
         <Col>

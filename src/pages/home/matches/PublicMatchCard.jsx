@@ -2,14 +2,26 @@ import {
   ExclamationCircleOutlined, LoadingOutlined, LockOutlined,
 } from '@ant-design/icons';
 import {
-  Card, Col, Row, Space, Spin, Tag, Typography,
+  Card, Col, Row, Space, Spin, Tag, Typography, Modal, Form, Input, message,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
-import React from 'react';
+import useAxios from 'hooks/use-axios';
+import React, { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { getBrokerTopic, getPublishToken, putSubscribeData } from 'utils/tokens';
 
-const { Text } = Typography;
+const { useForm } = Form;
+const { Text, Title } = Typography;
 
 function MatchCard({ match }) {
+  const axios = useAxios();
+  const history = useHistory();
+  const [form] = useForm();
+
+  const matchTopic = useMemo(() => getBrokerTopic(match), [match]);
+  const publishToken = useMemo(() => getPublishToken(match), [match]);
+  const [modalVisible, setModalVisible] = useState(false);
+
   function renderMatchStatus() {
     return (
       <Text type="secondary" style={{ fontSize: 14 }}>
@@ -47,6 +59,23 @@ function MatchCard({ match }) {
 
   function renderContent() {
     // TODO: se tiver pin e não tiver o brokerTopic salvo, mostrar cadeado
+    if (!matchTopic) {
+      return (
+        <div style={{ paddingTop: 24, paddingBottom: 24 }}>
+          <Row justify="center">
+            <Col>
+              <Title level={4}>Partida privada</Title>
+            </Col>
+          </Row>
+          <Row justify="center">
+            <Col>
+              <Text>Clique aqui para digitar o pin</Text>
+            </Col>
+          </Row>
+
+        </div>
+      );
+    }
 
     return (
       <MatchScore
@@ -55,8 +84,66 @@ function MatchCard({ match }) {
     );
   }
 
+  async function onModalConfirm() {
+    const values = await form.validateFields();
+
+    try {
+      const { data } = await axios.post('/public/checkPin', {
+        matchId: match.id,
+        pin: values.pin,
+      });
+
+      setModalVisible(false);
+      putSubscribeData(match.id, {
+        brokerTopic: data.brokerTopic,
+        expirationDate: data.expiration,
+      });
+
+      history.push(`/match/${match.id}`);
+    } catch (error) {
+      message.error('PIN incorreto.');
+    }
+  }
+
+  function renderPasswordModal() {
+    return (
+      <Modal
+        title="Digite o PIN da partida"
+        visible={modalVisible}
+        onOk={onModalConfirm}
+        onCancel={() => setModalVisible(false)}
+        cancelText="Cancelar"
+        okText="Confirmar"
+      >
+        <Form form={form} size="large">
+          <Row justify="center">
+            <Col>
+              <Form.Item
+                name="pin"
+                rules={[{
+                  required: true,
+                  message: 'Por favor, digite o PIN',
+                }]}
+              >
+                <Input placeholder="PIN" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+    );
+  }
+
+  function openMatchDetails() {
+    if (!matchTopic) {
+      return setModalVisible(true);
+    }
+
+    return history.push(`/match/${match.id}`);
+  }
+
   function isControllingMatch() {
-    return false; // TODO: implementar baseado nos tokens
+    return publishToken;
   }
 
   function renderFooter() {
@@ -83,15 +170,19 @@ function MatchCard({ match }) {
   }
 
   return (
-    <Card
-      title={renderTitle()}
-      bodyStyle={{ padding: 12 }}
-      headStyle={{ padding: '0 12px' }}
-      style={{ cursor: 'pointer' }}
-    >
-      {renderContent()}
-      {renderFooter()}
-    </Card>
+    <>
+      {renderPasswordModal()}
+      <Card
+        title={renderTitle()}
+        bodyStyle={{ padding: 12 }}
+        headStyle={{ padding: '0 12px' }}
+        style={{ cursor: 'pointer' }}
+        onClick={openMatchDetails}
+      >
+        {renderContent()}
+        {renderFooter()}
+      </Card>
+    </>
   );
 }
 

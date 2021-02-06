@@ -5,11 +5,11 @@ import { getPublishToken } from 'utils/tokens';
 import ControlCard from '../../ControlCard';
 import TimeLine from '../../TimeLine';
 
-function ControlTab({ match }) {
+function ControlTab({ match, isCoordinator = false }) {
   const publishToken = useMemo(() => getPublishToken(match), [match]);
 
   function renderSomeoneIsControlling() {
-    if (!publishToken) {
+    if (!publishToken && isCoordinator) {
       return (
         <Row style={{ marginBottom: 16 }} justify="center">
           <Col>
