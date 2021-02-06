@@ -24,6 +24,7 @@ module.exports = {
   ],
   rules: {
     "react/forbid-prop-types": "off",
+    "react/prop-types": "off"
   },
   "settings": {
     "import/resolver": {

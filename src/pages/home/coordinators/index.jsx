@@ -1,5 +1,5 @@
 import {
-  Button, Col, Form, Input, Layout, message, Popconfirm, Row, Space, Table, Modal,
+  Button, Col, Form, Input, Layout, message, Modal, Popconfirm, Row, Space, Table,
 } from 'antd';
 import useAxios from 'hooks/use-axios';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -153,9 +153,15 @@ function CoordinatorsPage() {
   function renderActions(coordinator) {
     return (
       <Space>
-        <a onClick={() => openCreateOrEditCoordinatorModal(coordinator)}>Editar</a>
+        <a
+          href={() => false}
+          onClick={() => openCreateOrEditCoordinatorModal(coordinator)}
+        >
+          Editar
+
+        </a>
         <Popconfirm title="Tem certeza?" onConfirm={() => onRemove(coordinator)}>
-          <a>Excluir</a>
+          <a href={() => {}}>Excluir</a>
         </Popconfirm>
       </Space>
     );

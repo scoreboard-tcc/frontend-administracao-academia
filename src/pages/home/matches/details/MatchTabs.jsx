@@ -1,6 +1,6 @@
 import { ControlOutlined, HistoryOutlined, LinkOutlined } from '@ant-design/icons';
 import { Tabs } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { getPublishToken } from 'utils/tokens';
 import ActionsTab from './tabs/ActionsTab';
 import ControlTab from './tabs/ControlTab';

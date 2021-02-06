@@ -27,7 +27,7 @@ function AcademyPlayers({ onCadastrarClick, updateData }) {
 
   useEffect(() => {
     requestDataSource();
-  }, [updateData]);
+  }, [updateData, requestDataSource]);
 
   function onSearch(value) {
     requestDataSource(value);
@@ -52,7 +52,7 @@ function AcademyPlayers({ onCadastrarClick, updateData }) {
     return (
       <Space>
         <Popconfirm title="Tem certeza?" onConfirm={() => onUnlink(player)}>
-          <a>Desvincular da academia</a>
+          <a href={() => {}}>Desvincular da academia</a>
         </Popconfirm>
       </Space>
     );
