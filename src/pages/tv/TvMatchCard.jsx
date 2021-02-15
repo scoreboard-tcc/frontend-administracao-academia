@@ -1,36 +1,28 @@
+import { LoadingOutlined, LockOutlined } from '@ant-design/icons';
 import {
-  ExclamationCircleOutlined, LoadingOutlined, LockOutlined,
-} from '@ant-design/icons';
-import {
-  Card, Col, Row, Space, Spin, Tag, Typography, Modal, Form, Input, message,
+  Card, Col, Form, Input, message, Modal, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
 import useAxios from 'hooks/use-axios';
-import useBroker from 'hooks/use-broker';
-import React, {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
 import {
-  getBrokerTopic, getControlData, getPublishToken, putSubscribeData, removeControlData,
+  getBrokerTopic, putSubscribeData,
 } from 'utils/tokens';
 
 const { useForm } = Form;
 const { Text, Title } = Typography;
 
-function MatchCard({ match, onControlChanged }) {
+function TvMatchCard({ match }) {
   const axios = useAxios();
-  const broker = useBroker();
-  const history = useHistory();
+
   const [form] = useForm();
 
   const matchTopic = useMemo(() => getBrokerTopic(match), [match]);
-  const publishToken = useMemo(() => getPublishToken(match), [match]);
   const [modalVisible, setModalVisible] = useState(false);
 
   function renderMatchStatus() {
     return (
-      <Text type="secondary" style={{ fontSize: 14 }}>
+      <Text type="secondary" style={{ fontSize: 18 }}>
         <Space>
           <Spin size="small" indicator={<LoadingOutlined />} />
           Em andamento
@@ -43,7 +35,7 @@ function MatchCard({ match, onControlChanged }) {
     return (
       <Row gutter={16}>
         <Col>
-          <Text>
+          <Text style={{ fontSize: 18 }}>
             Partida
             {' '}
             {match.id}
@@ -51,7 +43,7 @@ function MatchCard({ match, onControlChanged }) {
         </Col>
         <Col flex={1}>
           <Tag>
-            <Text strong style={{ fontSize: 14 }}>
+            <Text strong style={{ fontSize: 18 }}>
               {match.scoreboard ? match.scoreboard.description : 'Sem placar'}
             </Text>
           </Tag>
@@ -64,7 +56,6 @@ function MatchCard({ match, onControlChanged }) {
   }
 
   function renderContent() {
-    // TODO: se tiver pin e não tiver o brokerTopic salvo, mostrar cadeado
     if (!matchTopic) {
       return (
         <div style={{ paddingTop: 24, paddingBottom: 24 }}>
@@ -78,7 +69,6 @@ function MatchCard({ match, onControlChanged }) {
               <Text>Clique aqui para digitar o pin</Text>
             </Col>
           </Row>
-
         </div>
       );
     }
@@ -86,6 +76,7 @@ function MatchCard({ match, onControlChanged }) {
     return (
       <MatchScore
         match={match}
+        scoreFontSize={22}
       />
     );
   }
@@ -105,7 +96,7 @@ function MatchCard({ match, onControlChanged }) {
         expirationDate: data.expiration,
       });
 
-      history.push(`/match/${match.id}`);
+      window.location.reload();
     } catch (error) {
       message.error('PIN incorreto.');
     }
@@ -145,26 +136,12 @@ function MatchCard({ match, onControlChanged }) {
       return setModalVisible(true);
     }
 
-    return history.push(`/match/${match.id}`);
-  }
-
-  function isControllingMatch() {
-    return publishToken;
+    return null;
   }
 
   function renderFooter() {
     return (
-      <Row gutter={24} style={{ paddingTop: 16 }}>
-        <Col flex={1}>
-          <Tag
-            icon={<ExclamationCircleOutlined />}
-            color="warning"
-            style={{ visibility: isControllingMatch() ? 'visible' : 'hidden' }}
-          >
-            Você está controlando essa partida
-          </Tag>
-        </Col>
-
+      <Row gutter={24} style={{ paddingTop: 16 }} justify="end">
         { match.pin && (
         <Col>
           <LockOutlined title="Partida com senha" />
@@ -175,46 +152,18 @@ function MatchCard({ match, onControlChanged }) {
     );
   }
 
-  const checkControllerSequence = useCallback(async (currentControllerSequence) => {
-    const controlData = getControlData(match.id);
-
-    if (controlData && controlData.controllerSequence !== currentControllerSequence) {
-      removeControlData(match.id);
-
-      onControlChanged();
-    }
-  }, [onControlChanged, match.id]);
-
-  useEffect(() => {
-    if (!matchTopic) {
-      return () => { };
-    }
-
-    broker.subscribe(`${matchTopic}/Controller_Sequence`, { qos: 1 });
-
-    broker.on('message', (fullTopic, data) => {
-      const topic = fullTopic.split('/')[1];
-
-      if (topic === 'Controller_Sequence') {
-        checkControllerSequence(Number(data.toString()));
-      }
-    });
-
-    return () => {
-      broker.unsubscribe(`${matchTopic}/Controller_Sequence`);
-      broker.removeAllListeners();
-    };
-  }, [broker, matchTopic, checkControllerSequence]);
-
   return (
     <>
       {renderPasswordModal()}
       <Card
         title={renderTitle()}
-        bodyStyle={{ padding: 12 }}
-        headStyle={{ padding: '0 12px' }}
+        bodyStyle={{ padding: 24 }}
+        headStyle={{ padding: '0 12px', border: 0 }}
         style={{
           cursor: 'pointer',
+          width: '100%',
+          height: 280,
+          fontSize: '1.5em',
           boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
         }}
         onClick={openMatchDetails}
@@ -226,4 +175,4 @@ function MatchCard({ match, onControlChanged }) {
   );
 }
 
-export default MatchCard;
+export default TvMatchCard;

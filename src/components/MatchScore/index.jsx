@@ -11,7 +11,7 @@ import {
 
 const { Text } = Typography;
 
-function MatchScore({ match, onMatchFinished }) {
+function MatchScore({ match, onMatchFinished, scoreFontSize = 16 }) {
   const broker = useBroker();
 
   const [matchData, setMatchData] = useState({});
@@ -35,7 +35,7 @@ function MatchScore({ match, onMatchFinished }) {
     return (
       <Row gutter={24}>
         <Col span={13} />
-        <Col span={2} offset={offset} style={{ fontSize: 16, textAlign: 'right' }}>
+        <Col span={2} offset={offset} style={{ fontSize: scoreFontSize, textAlign: 'right' }}>
           <span style={{
             backgroundColor: 'rgb(24, 144, 255)',
             width: 6,
@@ -69,20 +69,20 @@ function MatchScore({ match, onMatchFinished }) {
             />
           )}
         </Col>
-        <Col span={2} style={{ fontSize: 16, textAlign: 'right' }}>
+        <Col span={2} style={{ fontSize: scoreFontSize, textAlign: 'right' }}>
           {matchData[`Set1_${topicSuffix}`]}
         </Col>
-        <Col span={2} style={{ fontSize: 16, textAlign: 'right' }}>
+        <Col span={2} style={{ fontSize: scoreFontSize, textAlign: 'right' }}>
           {matchData[`Set2_${topicSuffix}`]}
         </Col>
-        <Col span={2} style={{ fontSize: 16, textAlign: 'right' }}>
+        <Col span={2} style={{ fontSize: scoreFontSize, textAlign: 'right' }}>
           {matchData[`Set3_${topicSuffix}`]}
         </Col>
         <Col
           span={4}
           offset={1}
           style={{
-            fontSize: 16,
+            fontSize: scoreFontSize,
             backgroundColor: '#1890ff',
             color: 'white',
             fontWeight: 'bold',
