@@ -5,6 +5,7 @@ import {
 import MatchScore from 'components/MatchScore';
 import useAxios from 'hooks/use-axios';
 import React, { useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   getBrokerTopic, putSubscribeData,
 } from 'utils/tokens';
@@ -14,6 +15,7 @@ const { Text, Title } = Typography;
 
 function TvMatchCard({ match }) {
   const axios = useAxios();
+  const history = useHistory();
 
   const [form] = useForm();
 
@@ -135,7 +137,7 @@ function TvMatchCard({ match }) {
       return setModalVisible(true);
     }
 
-    return null;
+    return history.push(`/tv/${match.id}`);
   }
 
   function renderFooter() {

@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 const { Title, Text } = Typography;
 const { Header } = Layout;
 
-function MatchHeader({ match, isCoordinator = false }) {
+function TvMatchHeader({ match }) {
   const history = useHistory();
   const [duration, setDuration] = useState('');
 
@@ -28,7 +28,7 @@ function MatchHeader({ match, isCoordinator = false }) {
   }, [match.startedAt]);
 
   function onBackButtonClick() {
-    history.replace('/');
+    history.goBack();
   }
 
   useEffect(() => {
@@ -40,15 +40,13 @@ function MatchHeader({ match, isCoordinator = false }) {
   }, [updateDuration]);
 
   return (
-    <Header style={{ height: 160, padding: 24 }}>
+    <Header style={{ height: 220, padding: 24 }}>
       <Row align="middle">
         <Col span={8}>
-          {!isCoordinator && (
           <LeftOutlined
             onClick={onBackButtonClick}
             style={{ color: 'white', fontSize: 24 }}
           />
-          )}
         </Col>
         <Col span={8} style={{ textAlign: 'center' }}>
           <Title
@@ -60,16 +58,16 @@ function MatchHeader({ match, isCoordinator = false }) {
         </Col>
         <Col span={8} />
       </Row>
-      <Row justify="center" style={{ height: 20 }}>
+      <Row justify="center" style={{ height: 50 }}>
         <Col>
-          <Text style={{ color: 'white' }}>
+          <Text style={{ color: 'white', fontSize: 36 }}>
             Duração da partida
           </Text>
         </Col>
       </Row>
       <Row justify="center">
         <Col>
-          <Text style={{ color: 'white' }}>
+          <Text style={{ color: 'white', fontSize: 48 }}>
             {duration || <Spin />}
           </Text>
         </Col>
@@ -78,4 +76,4 @@ function MatchHeader({ match, isCoordinator = false }) {
   );
 }
 
-export default MatchHeader;
+export default TvMatchHeader;
