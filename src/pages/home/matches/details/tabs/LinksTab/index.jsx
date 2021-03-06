@@ -129,13 +129,11 @@ function LinksTab({ match }) {
       putControlData(data.matchId, {
         publishToken: data.publishToken,
         refreshToken: data.refreshToken,
-        expirationDate: data.expirationDate,
         controllerSequence: data.controllerSequence,
       });
 
       putSubscribeData(data.matchId, {
         brokerTopic: data.brokerTopic,
-        expirationDate: data.expirationDate,
       });
 
       window.location.reload();

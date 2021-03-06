@@ -2,7 +2,7 @@ import {
   ExclamationCircleOutlined, LoadingOutlined, LockOutlined,
 } from '@ant-design/icons';
 import {
-  Card, Col, Row, Space, Spin, Tag, Typography, Modal, Form, Input, message,
+  Card, Col, Form, Input, message, Modal, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
 import useAxios from 'hooks/use-axios';
@@ -102,7 +102,6 @@ function MatchCard({ match, onControlChanged }) {
       setModalVisible(false);
       putSubscribeData(match.id, {
         brokerTopic: data.brokerTopic,
-        expirationDate: data.expiration,
       });
 
       history.push(`/match/${match.id}`);

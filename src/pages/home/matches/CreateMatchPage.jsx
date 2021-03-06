@@ -1,6 +1,6 @@
 import { DownOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
 import {
-  Button, Col, Form, Input, InputNumber, message, Modal, Radio, Row, Select, Steps, Switch,
+  Button, Col, Form, Input, message, Modal, Radio, Row, Select, Steps, Switch,
   Tag, Typography,
 } from 'antd';
 import useAxios from 'hooks/use-axios';
@@ -171,7 +171,6 @@ function CreateMatchPage() {
     try {
       const { data } = await axios.post('/match', {
         scoreboardId,
-        duration: values.duration,
         player1Id: typeof values.player1 === 'number' ? values.player1 : null,
         player2Id: typeof values.player2 === 'number' ? values.player2 : null,
         player1Name: typeof values.player1 === 'string' ? values.player1 : null,
@@ -192,7 +191,6 @@ function CreateMatchPage() {
 
       putControlData(data.id, {
         controllerSequence: data.controllerSequence,
-        expirationDate: data.expirationDate,
         publishToken: data.publishToken,
         refreshToken: data.refreshToken,
       });
@@ -276,19 +274,6 @@ function CreateMatchPage() {
   function renderMatchSettings() {
     return (
       <div style={{ display: step === 1 ? 'block' : 'none' }}>
-        <Row style={{ marginTop: 32, marginBottom: 16 }} justify="center">
-          <Col>
-            <Text style={{ fontSize: 16 }}>Duração da partida (minutos)</Text>
-          </Col>
-        </Row>
-        <Row justify="center">
-          <Col>
-            <Form.Item name="duration">
-              <InputNumber min={10} max={60 * 5} style={{ width: 200 }} />
-            </Form.Item>
-          </Col>
-        </Row>
-
         <Row style={{ marginTop: 16, marginBottom: 16 }} justify="center">
           <Col>
             <Text style={{ fontSize: 16 }}>Listada</Text>
@@ -379,7 +364,6 @@ function CreateMatchPage() {
         tieBreakType: 'REGULAR',
         scoringType: 'BASIC',
         hasAdvantage: true,
-        duration: 60,
         listed: true,
         pin: null,
       }}

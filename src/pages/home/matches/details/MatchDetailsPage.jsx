@@ -72,7 +72,6 @@ function MatchDetailsPage({ isCoordinator = false }) {
 
       putSubscribeData(matchId, {
         brokerTopic: data.brokerTopic,
-        expirationDate: data.expiration,
       });
 
       requestMatch();

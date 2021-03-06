@@ -93,7 +93,6 @@ function TvMatchCard({ match }) {
       setModalVisible(false);
       putSubscribeData(match.id, {
         brokerTopic: data.brokerTopic,
-        expirationDate: data.expiration,
       });
 
       window.location.reload();
