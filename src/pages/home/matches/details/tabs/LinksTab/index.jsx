@@ -1,16 +1,18 @@
 import { QrcodeOutlined, ShareAltOutlined } from '@ant-design/icons';
 import {
-  Button, Col, Input, message, Modal, Row, Typography,
+  Button, Col, Input, message, Modal, Popconfirm, Row, Typography,
 } from 'antd';
 import useAxios from 'hooks/use-axios';
 import QRCode from 'qrcode.react';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { getControlData, putControlData, putSubscribeData } from 'utils/tokens';
 
 const { Text } = Typography;
 
 function LinksTab({ match }) {
   const axios = useAxios();
+  const history = useHistory();
   const [qrCodeValue, setQrCodeValue] = useState('');
 
   const controlData = useMemo(() => getControlData(match.id), [match.id]);
@@ -150,11 +152,36 @@ function LinksTab({ match }) {
     return <Button onClick={takeControl} danger>Recuperar o controle da partida</Button>;
   }
 
+  function renderFinishMatch() {
+    return (
+      <Row justify="center" style={{ marginTop: 48 }}>
+        <Col>
+          <Popconfirm title="Confirmar finalização da partida?" onConfirm={onFinishClick}>
+            <Button type="primary" danger> Finalizar partida</Button>
+          </Popconfirm>
+        </Col>
+      </Row>
+    );
+  }
+
+  const onFinishClick = useCallback(async () => {
+    try {
+      await axios.post(`/match/finish/${match.id}`);
+
+      message.warn('A partida foi finalizada.');
+      history.replace('/home/matches');
+    } catch (error) {
+      message.error('Não foi possível finalizar a partida.');
+    }
+  }, [axios, match, history]);
+
   return (
     <div style={{ paddingTop: 48 }}>
       {renderModal()}
       {renderControlInput()}
       {renderSubscribeInput()}
+      {renderFinishMatch()}
+
       <Row justify="center" style={{ marginTop: 64 }}>
         <Col>
           {renderTakeControlButton()}

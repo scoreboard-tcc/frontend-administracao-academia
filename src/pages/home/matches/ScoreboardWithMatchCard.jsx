@@ -1,12 +1,14 @@
 import {
-  ExclamationCircleOutlined, EyeInvisibleOutlined, LoadingOutlined, LockOutlined,
+  ExclamationCircleOutlined, EyeInvisibleOutlined, LoadingOutlined, LockOutlined, MenuOutlined,
 } from '@ant-design/icons';
 import {
-  Card, Col, Row, Space, Spin, Tag, Typography,
+  Button,
+  Card, Col, Dropdown, Menu, message, Popconfirm, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
+import useAxios from 'hooks/use-axios';
 import useBroker from 'hooks/use-broker';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { getControlData, getPublishToken, removeControlData } from 'utils/tokens';
 
@@ -14,8 +16,33 @@ const { Text } = Typography;
 
 function ScoreboardWithMatchCard({ scoreboard, onMatchFinished, onControlChanged }) {
   const broker = useBroker();
+  const axios = useAxios();
   const { url } = useRouteMatch();
   const history = useHistory();
+
+  const onFinishClick = useCallback(async () => {
+    try {
+      await axios.post(`/match/finish/${scoreboard.match.id}`);
+
+      message.warn('A partida foi finalizada.');
+    } catch (error) {
+      message.error('Não foi possível finalizar a partida.');
+    }
+  }, [axios, scoreboard]);
+
+  const menu = useMemo(() => (
+    <Menu onClick={(e) => {
+      e.domEvent.stopPropagation();
+    }}
+    >
+      <Menu.Item danger>
+        <Popconfirm title="Confirmar finalização da partida?" onConfirm={onFinishClick}>
+          <Button type="text" danger> Finalizar partida</Button>
+        </Popconfirm>
+      </Menu.Item>
+
+    </Menu>
+  ), [onFinishClick]);
 
   function renderMatchStatus() {
     return (
@@ -23,6 +50,9 @@ function ScoreboardWithMatchCard({ scoreboard, onMatchFinished, onControlChanged
         <Space>
           {scoreboard.match && <Spin size="small" indicator={<LoadingOutlined />} />}
           {scoreboard.match ? 'Em andamento' : 'Disponível'}
+          <Dropdown overlay={menu}>
+            <MenuOutlined onClick={(e) => e.stopPropagation()} />
+          </Dropdown>
         </Space>
       </Text>
     );

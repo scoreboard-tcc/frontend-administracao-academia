@@ -1,20 +1,47 @@
 import {
-  ExclamationCircleOutlined, EyeInvisibleOutlined, LoadingOutlined, LockOutlined,
+  ExclamationCircleOutlined, EyeInvisibleOutlined, LoadingOutlined, LockOutlined, MenuOutlined,
 } from '@ant-design/icons';
 import {
-  Card, Col, Row, Space, Spin, Tag, Typography,
+  Button,
+  Card, Col, Dropdown, Menu, message, Popconfirm, Row, Space, Spin, Tag, Typography,
 } from 'antd';
 import MatchScore from 'components/MatchScore';
+import useAxios from 'hooks/use-axios';
 import useBroker from 'hooks/use-broker';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { getControlData, getPublishToken, removeControlData } from 'utils/tokens';
 
 const { Text } = Typography;
 
 function MatchCard({ match, onMatchFinished, onControlChanged }) {
+  const axios = useAxios();
   const history = useHistory();
   const broker = useBroker();
+
+  const onFinishClick = useCallback(async () => {
+    try {
+      await axios.post(`/match/finish/${match.id}`);
+
+      message.warn('A partida foi finalizada.');
+    } catch (error) {
+      message.error('Não foi possível finalizar a partida.');
+    }
+  }, [axios, match]);
+
+  const menu = useMemo(() => (
+    <Menu onClick={(e) => {
+      e.domEvent.stopPropagation();
+    }}
+    >
+      <Menu.Item danger>
+        <Popconfirm title="Confirmar finalização da partida?" onConfirm={onFinishClick}>
+          <Button type="text" danger> Finalizar partida</Button>
+        </Popconfirm>
+      </Menu.Item>
+
+    </Menu>
+  ), [onFinishClick]);
 
   function renderMatchStatus() {
     return (
@@ -22,6 +49,9 @@ function MatchCard({ match, onMatchFinished, onControlChanged }) {
         <Space>
           <Spin size="small" indicator={<LoadingOutlined />} />
           Em andamento
+          <Dropdown overlay={menu}>
+            <MenuOutlined onClick={(e) => e.stopPropagation()} />
+          </Dropdown>
         </Space>
       </Text>
     );
