@@ -1,6 +1,6 @@
 import { DownOutlined, EditOutlined, SettingOutlined } from '@ant-design/icons';
 import {
-  Button, Col, Form, Input, message, Modal, Radio, Row, Select, Steps, Switch,
+  Button, Col, Form, Input, message, Modal, Radio, Row, Select, Space, Steps, Switch,
   Tag, Typography,
 } from 'antd';
 import useAxios from 'hooks/use-axios';
@@ -71,6 +71,7 @@ function PlayerInput({ name, placeholder, form }) {
         showSearch
         onSearch={debounce(onSearch, 200)}
         size="large"
+        labelInValue
         optionFilterProp="label"
         allowClear
       />
@@ -145,7 +146,10 @@ function CreateMatchPage() {
   const query = new URLSearchParams(search);
 
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [showMatchConfirmation, setShowMatchConfirmation] = useState(false);
   const [step, setStep] = useState(0);
+
+  const [enableCreateButton, setEnableCreateButton] = useState(false);
 
   const scoreboardId = query.get('id') || null;
   const scoreboardDescription = query.get('ds') || 'Sem placar';
@@ -168,11 +172,12 @@ function CreateMatchPage() {
   }
 
   async function onSubmit(values) {
+    console.log({ values });
     try {
       const { data } = await axios.post('/match', {
         scoreboardId,
-        player1Id: typeof values.player1 === 'number' ? values.player1 : null,
-        player2Id: typeof values.player2 === 'number' ? values.player2 : null,
+        player1Id: typeof values.player1 === 'object' ? values.player1.value : null,
+        player2Id: typeof values.player2 === 'object' ? values.player2.value : null,
         player1Name: typeof values.player1 === 'string' ? values.player1 : null,
         player2Name: typeof values.player2 === 'string' ? values.player2 : null,
         listed: values.listed,
@@ -329,6 +334,87 @@ function CreateMatchPage() {
     );
   }
 
+  function renderMatchConfirmation() {
+    const values = form.getFieldsValue();
+
+    const player1Name = typeof values.player1 === 'object' ? values.player1.label : values.player1;
+    const player2Name = typeof values.player2 === 'object' ? values.player2.label : values.player2;
+
+    return (
+      <Modal
+        title="Confirmar criação da partida"
+        visible={showMatchConfirmation}
+        forceRender
+        onOk={() => {
+          form.submit();
+          setShowMatchConfirmation(false);
+        }}
+        okText="Confirmar"
+        onCancel={() => setShowMatchConfirmation(false)}
+        bodyStyle={{
+          paddingLeft: 24, paddingRight: 24, paddingTop: 24, paddingBottom: 24,
+        }}
+      >
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>Jogador 1:</Text>
+              <Text>{player1Name}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>Jogador 2:</Text>
+              <Text>{player2Name}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>Tipo do último set:</Text>
+              <Text>{values.tieBreakType === 'REGULAR' ? 'Regular' : 'Até 10 pontos'}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>Pontuação:</Text>
+              <Text>{values.scoringType === 'BASIC' ? 'Básica' : 'Avançada'}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>Vantagem:</Text>
+              <Text>{values.hasAdvantage ? 'Sim' : 'Não'}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>Listada:</Text>
+              <Text>{values.listed ? 'Sim' : 'Não'}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
+              <Text strong>PIN:</Text>
+              <Text>{values.pin || 'Sem pin'}</Text>
+            </Space>
+          </Col>
+        </Row>
+      </Modal>
+    );
+  }
+
   function renderContent() {
     return (
       <div style={{
@@ -352,6 +438,10 @@ function CreateMatchPage() {
     );
   }
 
+  function onFormChange(values, allValues) {
+    setEnableCreateButton(allValues.player1 && allValues.player2);
+  }
+
   return (
     <Form
       form={form}
@@ -360,6 +450,7 @@ function CreateMatchPage() {
       }}
       size="large"
       onFinish={onSubmit}
+      onValuesChange={onFormChange}
       initialValues={{
         tieBreakType: 'REGULAR',
         scoringType: 'BASIC',
@@ -374,12 +465,22 @@ function CreateMatchPage() {
       <Row style={{ marginBottom: 48 }} justify="center">
         <Col>
           <Form.Item>
-            <Button style={{ width: 250 }} size="large" type="primary" htmlType="submit">Criar partida</Button>
+            <Button
+              style={{ width: 250 }}
+              size="large"
+              type="primary"
+              onClick={() => setShowMatchConfirmation(true)}
+              disabled={!enableCreateButton}
+            >
+              Criar partida
+
+            </Button>
           </Form.Item>
         </Col>
       </Row>
 
       {renderAdvancedSettings()}
+      {renderMatchConfirmation()}
     </Form>
   );
 }
