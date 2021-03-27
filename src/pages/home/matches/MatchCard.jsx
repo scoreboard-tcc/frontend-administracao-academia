@@ -10,7 +10,9 @@ import useAxios from 'hooks/use-axios';
 import useBroker from 'hooks/use-broker';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getControlData, getPublishToken, removeControlData } from 'utils/tokens';
+import {
+  getControlData, getPublishToken, removeControlData, removeSubscribeData,
+} from 'utils/tokens';
 
 const { Text } = Typography;
 
@@ -22,6 +24,9 @@ function MatchCard({ match, onMatchFinished, onControlChanged }) {
   const onFinishClick = useCallback(async () => {
     try {
       await axios.post(`/match/finish/${match.id}`);
+
+      removeControlData(match.id);
+      removeSubscribeData(match.id);
 
       message.warn('A partida foi finalizada.');
     } catch (error) {

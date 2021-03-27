@@ -1,30 +1,33 @@
+import {
+  addDays, isAfter, parseISO,
+} from 'date-fns';
+
 export function putSubscribeData(matchId, {
   brokerTopic,
 }) {
   localStorage.setItem(`match-token.subscribe-${matchId}`, JSON.stringify({
     brokerTopic,
+    expirationDate: addDays(new Date(), 1),
   }));
 }
 
 export function clearExpiredTokens() {
-  // TODO: limpar os tokens
+  const invalidKeys = Object
+    .entries(localStorage)
+    .filter(([key]) => key.startsWith('match-token'))
+    .filter(([key]) => {
+      const matchData = localStorage.getItem(key);
 
-  // const invalidKeys = Object
-  //   .entries(localStorage)
-  //   .filter(([key]) => key.startsWith('match-token'))
-  //   .filter(([key]) => {
-  //     const matchData = localStorage.getItem(key);
+      try {
+        const parsedData = JSON.parse(matchData);
 
-  //     try {
-  //       const parsedData = JSON.parse(matchData);
+        return isAfter(new Date(), parseISO(parsedData.expirationDate));
+      } catch (error) {
+        return true;
+      }
+    });
 
-  //       return isAfter(new Date(), parseISO(parsedData.expirationDate));
-  //     } catch (error) {
-  //       return true;
-  //     }
-  //   });
-
-  // invalidKeys.forEach(([key]) => localStorage.removeItem(key));
+  invalidKeys.forEach(([key]) => localStorage.removeItem(key));
 }
 
 export function putControlData(matchId, {
@@ -36,6 +39,7 @@ export function putControlData(matchId, {
     publishToken,
     refreshToken,
     controllerSequence,
+    expirationDate: addDays(new Date(), 1),
   }));
 }
 
@@ -53,8 +57,8 @@ export function removeControlData(matchId) {
   localStorage.removeItem(`match-token.control-${matchId}`);
 }
 
-export function removeSubscribeData(match) {
-  localStorage.removeItem(`match-token.subscribe-${match.id}`);
+export function removeSubscribeData(matchId) {
+  localStorage.removeItem(`match-token.subscribe-${matchId}`);
 }
 
 export function getBrokerTopic(match) {

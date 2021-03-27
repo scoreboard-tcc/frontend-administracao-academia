@@ -10,7 +10,9 @@ import useAxios from 'hooks/use-axios';
 import useBroker from 'hooks/use-broker';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { getControlData, getPublishToken, removeControlData } from 'utils/tokens';
+import {
+  getControlData, getPublishToken, removeControlData, removeSubscribeData,
+} from 'utils/tokens';
 
 const { Text } = Typography;
 
@@ -23,6 +25,9 @@ function ScoreboardWithMatchCard({ scoreboard, onMatchFinished, onControlChanged
   const onFinishClick = useCallback(async () => {
     try {
       await axios.post(`/match/finish/${scoreboard.match.id}`);
+
+      removeControlData(scoreboard.match.id);
+      removeSubscribeData(scoreboard.match.id);
 
       message.warn('A partida foi finalizada.');
     } catch (error) {
@@ -50,9 +55,12 @@ function ScoreboardWithMatchCard({ scoreboard, onMatchFinished, onControlChanged
         <Space>
           {scoreboard.match && <Spin size="small" indicator={<LoadingOutlined />} />}
           {scoreboard.match ? 'Em andamento' : 'Disponível'}
+          {scoreboard.match && (
           <Dropdown overlay={menu}>
             <MenuOutlined onClick={(e) => e.stopPropagation()} />
           </Dropdown>
+          ) }
+
         </Space>
       </Text>
     );

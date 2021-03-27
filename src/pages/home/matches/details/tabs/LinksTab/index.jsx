@@ -6,13 +6,14 @@ import useAxios from 'hooks/use-axios';
 import QRCode from 'qrcode.react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getControlData, putControlData, putSubscribeData } from 'utils/tokens';
+import {
+  getControlData, putControlData, putSubscribeData, removeControlData, removeSubscribeData,
+} from 'utils/tokens';
 
 const { Text } = Typography;
 
 function LinksTab({ match }) {
   const axios = useAxios();
-  const history = useHistory();
   const [qrCodeValue, setQrCodeValue] = useState('');
 
   const controlData = useMemo(() => getControlData(match.id), [match.id]);
@@ -169,11 +170,15 @@ function LinksTab({ match }) {
       await axios.post(`/match/finish/${match.id}`);
 
       message.warn('A partida foi finalizada.');
-      history.replace('/home/matches');
+
+      window.location.reload();
+
+      removeControlData(match.id);
+      removeSubscribeData(match.id);
     } catch (error) {
       message.error('Não foi possível finalizar a partida.');
     }
-  }, [axios, match, history]);
+  }, [axios, match]);
 
   return (
     <div style={{ paddingTop: 48 }}>

@@ -99,8 +99,8 @@ function TvMatchScore({ match, onMatchFinished, scoreFontSize = 48 }) {
   const checkIfMatchHasFinished = useCallback((matchWinner) => {
     if (matchWinner !== 'null' && onMatchFinished && !finished) {
       setFinished(true);
-      removeControlData(match);
-      removeSubscribeData(match);
+      removeControlData(match.id);
+      removeSubscribeData(match.id);
       onMatchFinished(matchWinner);
     }
   }, [onMatchFinished, finished, match]);

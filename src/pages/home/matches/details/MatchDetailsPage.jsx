@@ -52,7 +52,7 @@ function MatchDetailsPage({ isCoordinator = false }) {
 
       setMatch(data);
     } catch (error) {
-      message.error('Ocorreu um erro ao carregar a partida');
+      // message.error('Ocorreu um erro ao carregar a partida');
       history.replace('/home/matches');
     } finally {
       setLoading(false);
