@@ -4,8 +4,10 @@ import {
 } from 'antd';
 import useAxios from 'hooks/use-axios';
 import QRCode from 'qrcode.react';
-import React, { useCallback, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
+import getAuthenticationToken from 'utils/auth';
 import {
   getControlData, putControlData, putSubscribeData, removeControlData, removeSubscribeData,
 } from 'utils/tokens';
@@ -15,6 +17,13 @@ const { Text } = Typography;
 function LinksTab({ match }) {
   const axios = useAxios();
   const [qrCodeValue, setQrCodeValue] = useState('');
+  const [showFinishMatchButton, setShowFinishMatchButton] = useState(false);
+
+  useEffect(() => {
+    const token = getAuthenticationToken();
+
+    setShowFinishMatchButton(token);
+  }, []);
 
   const controlData = useMemo(() => getControlData(match.id), [match.id]);
 
@@ -185,7 +194,7 @@ function LinksTab({ match }) {
       {renderModal()}
       {renderControlInput()}
       {renderSubscribeInput()}
-      {renderFinishMatch()}
+      {showFinishMatchButton && renderFinishMatch()}
 
       <Row justify="center" style={{ marginTop: 64 }}>
         <Col>
