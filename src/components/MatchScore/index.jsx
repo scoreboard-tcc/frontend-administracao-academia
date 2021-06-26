@@ -112,8 +112,11 @@ function MatchScore({ match, onMatchFinished, scoreFontSize = 16 }) {
 
     broker.subscribe(`${matchTopic}/+`, { qos: 1 });
 
+    console.log('conectando', matchTopic);
+
     broker.on('message', (fullTopic, data) => {
       try {
+        console.log('mensagem', fullTopic);
         const topic = fullTopic.split('/')[1];
 
         if (topic === 'Match_Winner') {
