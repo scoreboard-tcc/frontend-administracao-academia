@@ -60,7 +60,7 @@ function MatchScore({ match, onMatchFinished, scoreFontSize = 16 }) {
           >
             {playerName}
           </Text>
-          {matchData.Player_Serving === topicSuffix && (
+          {matchData.Player_Serving && ((matchData.Player_Serving === '0' ? 'A' : 'B') === topicSuffix) && (
             <Badge
               style={{
                 marginLeft: 4,
@@ -111,7 +111,6 @@ function MatchScore({ match, onMatchFinished, scoreFontSize = 16 }) {
     }
 
     broker.subscribe(`${matchTopic}/+`, { qos: 1 });
-
     console.log('conectando', matchTopic);
 
     broker.on('message', (fullTopic, data) => {

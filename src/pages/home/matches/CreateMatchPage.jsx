@@ -172,7 +172,6 @@ function CreateMatchPage() {
   }
 
   async function onSubmit(values) {
-    console.log({ values });
     try {
       const { data } = await axios.post('/match', {
         scoreboardId,
@@ -185,6 +184,7 @@ function CreateMatchPage() {
         tieBreakType: values.tieBreakType,
         scoringType: values.scoringType,
         hasAdvantage: values.hasAdvantage,
+        firstPlayerToServe: values.firstPlayerToServe,
       });
 
       await message.success(
@@ -215,8 +215,13 @@ function CreateMatchPage() {
   }
 
   function renderMatchRules() {
+    const values = form.getFieldsValue();
+
+    const player1Name = typeof values.player1 === 'object' ? values.player1.label : values.player1;
+    const player2Name = typeof values.player2 === 'object' ? values.player2.label : values.player2;
+
     return (
-      <div style={{ display: step === 0 ? 'block' : 'none' }}>
+      <div style={{ display: step === 0 ? 'block' : 'none', paddingBottom: 16 }}>
         <Row style={{ marginTop: 32, marginBottom: 16 }} justify="center">
           <Col>
             <Text style={{ fontSize: 16 }}>Tipo do último set</Text>
@@ -269,6 +274,28 @@ function CreateMatchPage() {
           <Col>
             <Form.Item name="hasAdvantage" valuePropName="checked">
               <Switch>Vantagem</Switch>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row style={{ marginTop: 32, marginBottom: 16 }} justify="center">
+          <Col>
+            <Text style={{ fontSize: 16 }}>Primeiro jogador a sacar</Text>
+          </Col>
+        </Row>
+        <Row justify="center" className="form-row">
+          <Col span={24} lg={16} style={{ display: 'flex' }}>
+            <Form.Item name="firstPlayerToServe" noStyle>
+              <Radio.Group buttonStyle="solid">
+                <Row justify="center">
+                  <Col span={12} style={{ display: 'flex' }}>
+                    <Radio.Button value="0">{player1Name || 'Jogador 1'}</Radio.Button>
+                  </Col>
+                  <Col span={12} style={{ display: 'flex' }}>
+                    <Radio.Button value="1">{player2Name || 'Jogador 2'}</Radio.Button>
+                  </Col>
+                </Row>
+              </Radio.Group>
             </Form.Item>
           </Col>
         </Row>
@@ -398,6 +425,14 @@ function CreateMatchPage() {
         <Row>
           <Col>
             <Space>
+              <Text strong>Primeiro jogador a sacar:</Text>
+              <Text>{values.firstPlayerToServe === '0' ? player1Name : player2Name}</Text>
+            </Space>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Space>
               <Text strong>Listada:</Text>
               <Text>{values.listed ? 'Sim' : 'Não'}</Text>
             </Space>
@@ -457,6 +492,7 @@ function CreateMatchPage() {
         hasAdvantage: true,
         listed: true,
         pin: null,
+        firstPlayerToServe: '0',
       }}
     >
       {renderTitle()}

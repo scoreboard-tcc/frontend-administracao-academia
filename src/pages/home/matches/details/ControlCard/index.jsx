@@ -255,6 +255,16 @@ function ControlCard({
     }
   }
 
+  async function swapPlayerServing() {
+    const currentPlayerServing = matchData.current ? matchData.current.Player_Serving : '0';
+
+    broker.publish(
+      `${matchTopic}/Player_Serving`,
+      JSON.stringify({ publishToken, payload: currentPlayerServing === '0' ? '1' : '0' }),
+      { retain: true, qos: 1 },
+    );
+  }
+
   function renderCardHeader() {
     if (!showUndoRedo) {
       return null;
@@ -267,6 +277,11 @@ function ControlCard({
         </Col>
         <Col>
           <Button disabled={!canRedo} onClick={onRedoClick}>Refazer jogada</Button>
+        </Col>
+        <Col offset={1}>
+          <Button onClick={swapPlayerServing}>
+            Alternar o saque
+          </Button>
         </Col>
       </Row>
     );
@@ -290,6 +305,7 @@ function ControlCard({
     broker.on('message', (fullTopic, data) => {
       try {
         const topic = fullTopic.split('/')[1];
+        console.log('message', topic);
 
         if (topic === 'Match_Winner' && data.toString() !== 'null') {
           setHasWinner(true);
