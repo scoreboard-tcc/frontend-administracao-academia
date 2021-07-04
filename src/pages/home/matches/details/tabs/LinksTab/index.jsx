@@ -35,7 +35,7 @@ function LinksTab({ match }) {
     return `${window.location.host}/token-redirect?refresh_token=${controlData.refreshToken}`;
   }, [controlData]);
 
-  const subscribeUrl = useMemo(() => `${window.location.host}/match/${match.id}?pin=${match.pin || ''}`, [match]);
+  const subscribeUrl = useMemo(() => `https://${window.location.host}/match/${match.id}?pin=${match.pin || ''}`, [match]);
 
   async function openShareDialog(url, text) {
     const shareData = {
