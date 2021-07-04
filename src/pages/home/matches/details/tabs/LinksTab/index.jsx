@@ -32,7 +32,7 @@ function LinksTab({ match }) {
       return '';
     }
 
-    return `${window.location.host}/token-redirect?refresh_token=${controlData.refreshToken}`;
+    return `https://${window.location.host}/token-redirect?refresh_token=${controlData.refreshToken}`;
   }, [controlData]);
 
   const subscribeUrl = useMemo(() => `https://${window.location.host}/match/${match.id}?pin=${match.pin || ''}`, [match]);
